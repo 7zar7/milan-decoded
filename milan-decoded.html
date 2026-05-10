@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milan, Decoded — Marusya Semizarova</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <style>
+/* ═══════════════════════════════════════
+   VARIABLES + RESET
+═══════════════════════════════════════ */
+:root {
+  --obsidian: #0D0A08;
+  --gold:     #C9A84C;
+  --blush:    #E8C4B0;
+  --white:    #F5F2EE;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--obsidian); color: var(--white); overflow-x: hidden; }
+body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+/* ═══════════════════════════════════════
+   GRAIN
+═══════════════════════════════════════ */
+#grain {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999; pointer-events: none; opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px; will-change: transform;
+}
+
+/* ═══════════════════════════════════════
+   DUOMO SVG WATERMARK (fixed, full page)
+═══════════════════════════════════════ */
+#duomo-svg-wrap {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw; max-width: 1200px;
+  opacity: 0; z-index: 1;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+#duomo-svg { width: 100%; height: auto; display: block; }
+
+/* ═══════════════════════════════════════
+   FLOATING COORDINATE PARTICLES
+═══════════════════════════════════════ */
+.fc-item {
+  position: absolute;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 300;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+  animation: fc-drift var(--fc-dur, 8s) var(--fc-del, 0s) ease-in-out infinite;
+}
+@keyframes fc-drift {
+  0%,100% { transform: translateY(0)   translateX(0); }
+  35%     { transform: translateY(-9px) translateX(4px); }
+  70%     { transform: translateY(6px)  translateX(-3px); }
+}
+
+/* ═══════════════════════════════════════
+   SCENE RULE LINES
+═══════════════════════════════════════ */
+.scene-rule {
+  position: absolute; top: 0;
+  left: 6%; right: 6%; height: 1px;
+  background: var(--gold); opacity: 0.15;
+  transform-origin: left center; transform: scaleX(0);
+  z-index: 5; pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   LOGO + HAMBURGER
+═══════════════════════════════════════ */
+#logo {
+  position: fixed; top: 2rem; left: 2.5rem;
+  z-index: 10000;
+  font-family: 'JetBrains Mono', monospace; font-weight: 400;
+  font-size: 0.9rem; letter-spacing: 0.3em;
+  color: var(--gold); text-decoration: none; cursor: pointer;
+}
+#hamburger {
+  position: fixed; top: 2rem; right: 2.5rem;
+  z-index: 10000; width: 28px; height: 17px;
+  cursor: pointer; display: flex; flex-direction: column; justify-content: space-between;
+  background: transparent; border: none; padding: 0;
+  outline: none; -webkit-appearance: none; appearance: none; box-shadow: none;
+}
+#hamburger:hover { opacity: 0.6; }
+#hamburger:focus { outline: none; box-shadow: none; }
+#hamburger span { display: block; height: 1.5px; width: 28px; background: var(--gold); transition: transform .35s ease, opacity .25s ease; }
+#hamburger.open span:nth-child(1) { transform: translateY(7.75px) rotate(45deg); }
+#hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+#hamburger.open span:nth-child(3) { transform: translateY(-7.75px) rotate(-45deg); }
+
+/* ═══════════════════════════════════════
+   NAV BACKDROP + OVERLAY (right panel)
+═══════════════════════════════════════ */
+#nav-backdrop {
+  position: fixed; inset: 0; z-index: 9997;
+  background: rgba(13,10,8,0.55);
+  opacity: 0; visibility: hidden;
+  transition: opacity .4s ease, visibility .4s ease;
+}
+#nav-backdrop.open { opacity: 1; visibility: visible; }
+#nav-overlay {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 9998;
+  width: min(420px, 85vw);
+  background: rgba(13,10,8,0.98); backdrop-filter: blur(24px);
+  display: flex; align-items: center;
+  transform: translateX(100%);
+  transition: transform .45s cubic-bezier(.16,1,.3,1);
+}
+#nav-overlay.open { transform: translateX(0); }
+#nav-overlay nav { border-left: 1px solid rgba(201,168,76,0.2); padding-left: 3rem; width: 100%; }
+#nav-overlay nav ul { list-style: none; }
+#nav-overlay nav ul li { margin-bottom: 2.4rem; }
+#nav-overlay nav ul li:last-child { margin-bottom: 0; }
+#nav-overlay nav ul li a {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: clamp(20px, 3vw, 34px);
+  color: var(--white); text-decoration: none;
+  transition: color .25s ease, transform .25s ease;
+  display: inline-block;
+}
+#nav-overlay nav ul li a:hover { color: var(--gold); transform: translateX(8px); }
+.nav-idx {
+  font-family: 'JetBrains Mono', monospace; font-style: normal;
+  font-size: .55em; color: var(--gold); margin-right: .8em; opacity: .6;
+}
+
+/* ═══════════════════════════════════════
+   PRELOADER
+═══════════════════════════════════════ */
+#preloader {
+  position: fixed; inset: 0; z-index: 9000;
+  background: var(--obsidian);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.6rem;
+}
+#preloader-coords {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: clamp(15px,1.8vw,22px); letter-spacing: .15em;
+  color: var(--gold); display: flex;
+}
+#preloader-coords .ch { display: inline-block; min-width: .58em; text-align: center; }
+#preloader-locating {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: clamp(10px,.75vw,12px); letter-spacing: .5em;
+  color: rgba(201,168,76,.55); opacity: 0;
+  text-transform: lowercase; transition: opacity .6s ease;
+}
+
+/* ═══════════════════════════════════════
+   MAIN
+═══════════════════════════════════════ */
+#main { opacity: 0; visibility: hidden; }
+
+/* ═══════════════════════════════════════
+   SCENE BASE
+═══════════════════════════════════════ */
+.scene { position: relative; height: 100vh; overflow: hidden; }
+
+/* ═══════════════════════════════════════
+   SCENE 1 — HERO
+═══════════════════════════════════════ */
+#hero { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+#hero-letters { display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
+.hl {
+  font-family: 'Playfair Display', serif;
+  font-size: 18vw; font-weight: 900;
+  color: var(--white); letter-spacing: .3em; line-height: 1;
+  display: inline-block; will-change: transform, opacity;
+}
+#hl-n { letter-spacing: 0; }
+.hd {
+  font-family: 'Playfair Display', serif;
+  font-size: 7vw; font-weight: 900; color: var(--gold);
+  letter-spacing: 0; line-height: 1; display: inline-block;
+  align-self: flex-start; margin-top: .14em; will-change: transform, opacity;
+}
+#hero-decoded {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 1.8vw; letter-spacing: .8em;
+  color: var(--gold); text-transform: uppercase;
+  margin-top: .5rem; opacity: 0; position: relative; z-index: 2;
+}
+#decoded-cursor {
+  display: inline-block; width: 2px; height: 1em;
+  background: var(--gold); vertical-align: middle; margin-left: 2px;
+  animation: cur-blink .85s steps(1) infinite;
+}
+@keyframes cur-blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+#hero-tagline {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 1vw; color: var(--blush); opacity: 0;
+  max-width: 52ch; text-align: center; line-height: 1.7;
+  margin-top: 1.2rem; position: relative; z-index: 2;
+}
+#hero-hint {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .7vw; letter-spacing: .3em; color: var(--gold); opacity: 0;
+  white-space: nowrap; z-index: 2; animation: slow-pulse 2.8s ease-in-out infinite;
+}
+@keyframes slow-pulse { 0%,100%{opacity:.5} 50%{opacity:.12} }
+
+/* ═══════════════════════════════════════
+   SCENE 2 — DUOMO SVG REVEAL
+═══════════════════════════════════════ */
+#scene-duomo {
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 50% 55%, rgba(201,168,76,0.04) 0%, transparent 65%);
+}
+#duomo-label {
+  position: relative; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; gap: 1.6rem;
+  text-align: center;
+  opacity: 0; will-change: transform, opacity;
+}
+#duomo-label .d-coord {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 2vw; letter-spacing: .22em; color: var(--gold);
+}
+#duomo-label .d-city {
+  font-family: 'Playfair Display', serif;
+  font-style: italic; font-size: 8vw; color: var(--white); line-height: 1;
+}
+
+/* ═══════════════════════════════════════
+   SCENE 3 — STORY
+═══════════════════════════════════════ */
+#scene-story {
+  display: grid; grid-template-columns: 55fr 45fr; align-items: stretch;
+}
+#story-left {
+  padding: 0 4rem 0 8%; position: relative; z-index: 2;
+  display: flex; flex-direction: column; gap: 0; justify-content: center;
+}
+#story-line-1 {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 3.8vw; color: var(--blush); line-height: 1.35;
+  margin-bottom: .5em; opacity: 0; will-change: transform, opacity;
+}
+#story-line-2 {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 5vw; color: var(--white); line-height: 1.25;
+  margin-bottom: .5em; opacity: 0; will-change: transform, opacity;
+}
+#story-line-3 {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 3.8vw; color: var(--gold); line-height: 1.35;
+  margin-bottom: 1.5rem; opacity: 0; will-change: transform, opacity;
+}
+#story-byline {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .9vw; color: var(--blush); line-height: 1.6;
+  opacity: 0; will-change: opacity;
+}
+#story-right {
+  position: relative; overflow: hidden;
+}
+#portrait-wrap {
+  position: absolute; inset: 0;
+  will-change: clip-path;
+}
+#portrait-img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+  border-left: 2px solid rgba(201,168,76,0.4);
+}
+#portrait-photo-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(13,10,8,0.55) 0%, transparent 55%);
+  pointer-events: none; z-index: 1;
+}
+#portrait-svg-figure {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; z-index: 2; pointer-events: none;
+  will-change: opacity;
+}
+
+/* ═══════════════════════════════════════
+   SCENE MFW — MILAN FASHION WEEK
+═══════════════════════════════════════ */
+#scene-mfw {
+  position: relative;
+  background-color: var(--obsidian);
+  background-image:
+    linear-gradient(rgba(201,168,76,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.055) 1px, transparent 1px);
+  background-size: 120px 80px;
+  display: flex; align-items: flex-end; overflow: hidden;
+}
+#mfw-overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 28% 55%, rgba(201,168,76,0.05) 0%, transparent 55%);
+  pointer-events: none;
+}
+#mfw-content {
+  position: relative; z-index: 2;
+  padding: 0 4rem 5rem 8%; max-width: 580px;
+}
+#mfw-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .5em; color: var(--gold); text-transform: uppercase;
+  margin-bottom: 1.5rem; opacity: 0; will-change: transform, opacity;
+}
+#mfw-quote {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 3.2vw; color: var(--white); line-height: 1.35;
+  margin-bottom: 2rem; opacity: 0; will-change: transform, opacity;
+}
+#mfw-badges {
+  display: flex; gap: .8rem; flex-wrap: wrap;
+  opacity: 0; will-change: opacity;
+}
+.mfw-badge {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .7vw; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid rgba(201,168,76,0.4); padding: .35rem .9rem;
+}
+#mfw-frame {
+  position: absolute; top: 50%; right: 7%; z-index: 3;
+  transform: translateY(-50%) rotate(-3deg);
+  opacity: 0; will-change: opacity;
+  background: #fff;
+  padding: 8px 8px 42px 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  width: 260px;
+}
+#mfw-frame img {
+  width: 100%; height: 350px;
+  object-fit: cover; object-position: center top; display: block;
+}
+.mfw-frame-caption {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .65vw; color: var(--gold);
+  text-align: center; margin-top: .6rem; line-height: 1.4;
+  padding: 0 4px;
+}
+
+/* ═══════════════════════════════════════
+   SECTION NUMBERS
+═══════════════════════════════════════ */
+#section-numbers {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; background: var(--obsidian);
+}
+#section-numbers::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+#num-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; z-index: 1; width: 80%; max-width: 900px;
+}
+.num-item {
+  padding: 3.5rem;
+  border: 1px solid rgba(201,168,76,0.1);
+  display: flex; flex-direction: column; align-items: flex-start;
+  opacity: 0; will-change: opacity, transform;
+}
+.num-val {
+  font-family: 'Playfair Display', serif; font-weight: 900;
+  font-size: 12vw; color: var(--gold); line-height: 1; display: block;
+}
+.num-label {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .3em; color: var(--blush);
+  text-transform: uppercase; margin-top: .5rem;
+}
+
+/* ═══════════════════════════════════════
+   SECTION INSIDE — WHAT'S IN THE GUIDE
+═══════════════════════════════════════ */
+#section-inside {
+  display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden;
+}
+#ins-left {
+  padding: 8% 4rem 8% 8%;
+  display: flex; align-items: center;
+  border-right: 1px solid rgba(201,168,76,0.12);
+  position: relative; z-index: 2;
+}
+#ins-card-basso { width: 100%; opacity: 0; will-change: opacity, transform; }
+.ins-coord {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 1.1vw; letter-spacing: .15em; color: var(--gold); margin-bottom: .8rem;
+}
+.ins-divider { width: 40px; height: 1px; background: var(--gold); margin-bottom: 1.2rem; }
+.ins-name {
+  font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
+  font-size: 6vw; color: var(--white); line-height: 1.0; margin-bottom: .5rem;
+}
+.ins-addr {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 1.3vw; letter-spacing: .1em; color: var(--gold); opacity: .7;
+  margin-bottom: 1.5rem;
+}
+.ins-quote {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 1.4vw; color: var(--blush); line-height: 1.8;
+  border-left: 2px solid rgba(201,168,76,0.3); padding-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+.ins-meta {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 1vw; color: var(--blush); opacity: .65;
+  display: flex; gap: 2rem; flex-wrap: wrap;
+}
+#ins-right {
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2.5rem; padding: 3rem 3rem;
+}
+.ins-blur-row {
+  display: flex; gap: 1rem; width: 100%; justify-content: center;
+}
+.blur-card {
+  flex: 0 0 200px; min-height: 120px;
+  background: rgba(13,10,8,.92); border: 1px solid var(--gold);
+  padding: 1.5rem; filter: blur(8px); opacity: 0.3; overflow: hidden;
+}
+.bc-name {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 1.4vw; color: var(--white); margin-bottom: .5rem;
+}
+.bc-type {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .7vw; color: var(--gold); letter-spacing: .1em;
+}
+#ins-more-overlay {
+  display: flex; flex-direction: column; align-items: center; gap: 1.4rem;
+  width: 100%;
+}
+#ins-more-text {
+  font-family: 'Playfair Display', serif; font-weight: 900;
+  font-size: 3.5vw; color: var(--white); text-align: center;
+  opacity: 0; will-change: opacity, transform;
+}
+#ins-cta-btn {
+  font-family: 'JetBrains Mono', monospace; font-weight: 400;
+  font-size: .85vw; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid var(--gold); background: transparent;
+  padding: 1rem 2.5rem; cursor: pointer; opacity: 0; will-change: opacity;
+  transition: color .4s ease, background .4s ease; overflow: hidden; position: relative;
+}
+#ins-cta-btn:hover { color: var(--obsidian); background: var(--gold); }
+
+/* ═══════════════════════════════════════
+   COUNTDOWN + SOCIAL PROOF
+═══════════════════════════════════════ */
+#countdown { position: relative; z-index: 1; opacity: 0; will-change: opacity; }
+#cd-label {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .7vw; letter-spacing: .45em; color: var(--gold); text-transform: uppercase;
+  text-align: center; margin-bottom: 1rem; opacity: .8;
+}
+#cd-boxes { display: flex; align-items: center; gap: .8rem; }
+.cd-box {
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.25);
+  padding: .9rem 1.4rem; min-width: 72px;
+}
+.cd-num {
+  font-family: 'Playfair Display', serif; font-weight: 900;
+  font-size: 3vw; color: var(--white); line-height: 1;
+}
+.cd-unit {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .6vw; letter-spacing: .3em; color: var(--gold); margin-top: .3rem;
+}
+.cd-sep { font-family: 'Playfair Display', serif; font-size: 2vw; color: var(--gold); opacity: .5; align-self: flex-start; margin-top: .6rem; }
+#cd-expired {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .8vw; letter-spacing: .2em; color: var(--blush); text-align: center;
+}
+#social-proof {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 1vw; letter-spacing: .15em; color: var(--blush);
+  position: relative; z-index: 1; opacity: 0; will-change: opacity;
+}
+
+/* ═══════════════════════════════════════
+   SCENE 4 — DUOMO ZOOM + CARDS
+═══════════════════════════════════════ */
+#scene-cards {
+  display: flex; align-items: center; justify-content: flex-end;
+  background: radial-gradient(ellipse at 48% 42%, rgba(201,168,76,0.07) 0%, transparent 60%);
+}
+#cards-zoom-hint {
+  position: absolute; bottom: 3.5rem; left: 50%; transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .8vw; letter-spacing: .22em; color: var(--gold);
+  opacity: 0; white-space: nowrap; z-index: 3; will-change: opacity;
+}
+.loc-card {
+  position: absolute;
+  top: 50%; right: 6%;
+  transform: translateY(-50%);
+  z-index: 3; width: 380px;
+  background: rgba(13,10,8,.94);
+  border: 1px solid var(--gold);
+  padding: 2.5rem;
+  box-shadow: 0 0 40px rgba(201,168,76,.08);
+  will-change: transform, opacity;
+  opacity: 0;
+}
+.lc-coord {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .15em; color: var(--gold); margin-bottom: 1rem;
+}
+.lc-name {
+  font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic;
+  font-size: 3vw; color: var(--white); line-height: 1.1; margin-bottom: .8rem;
+}
+.lc-rule { width: 40px; height: 1px; background: var(--gold); margin-bottom: 1.2rem; }
+.lc-desc {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .95vw; color: var(--blush); line-height: 1.8; margin-bottom: 1rem;
+}
+.lc-type {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .75vw; color: rgba(201,168,76,.55); letter-spacing: .08em; margin-bottom: 1.2rem;
+}
+.lc-count {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .7vw; color: var(--gold); letter-spacing: .08em;
+}
+
+/* ═══════════════════════════════════════
+   SCENE 5 — NEIGHBORHOODS
+═══════════════════════════════════════ */
+#scene-neighborhoods {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.2rem;
+}
+#nb-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .5em; color: var(--gold);
+  text-transform: uppercase; opacity: 0; will-change: opacity, transform; position: relative; z-index: 2;
+}
+#nb-grid {
+  display: grid; grid-template-columns: repeat(3, 260px); gap: 1.4rem;
+  position: relative; z-index: 2;
+}
+.nb-card {
+  position: relative;
+  background: var(--obsidian); border: 1px solid rgba(201,168,76,.28);
+  padding: 2.8rem; min-height: 280px; cursor: default; will-change: transform, opacity;
+  transition: background .3s ease, border-color .3s ease, transform .3s ease; opacity: 0;
+}
+.nb-card:hover { background: rgba(201,168,76,.05); border-color: var(--gold); transform: translateY(-4px); }
+.nb-coord {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .62vw; letter-spacing: .12em; color: var(--gold); opacity: .75; margin-bottom: .6rem;
+}
+.nb-name {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 2.8vw; color: var(--white); line-height: 1.2; margin-bottom: .5rem;
+}
+.nb-rule { width: 28px; height: 1px; background: var(--gold); opacity: .45; margin-bottom: .5rem; }
+.nb-desc { font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 1.1vw; color: var(--blush); margin-bottom: .8rem; }
+.nb-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+.nb-tag {
+  font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: .62vw;
+  color: var(--blush); background: rgba(232,196,176,.07);
+  border: 1px solid rgba(232,196,176,.14); border-radius: 100px; padding: .18rem .55rem;
+}
+
+/* ═══════════════════════════════════════
+   SCENE 6 — CTA
+═══════════════════════════════════════ */
+#scene-cta {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; gap: 1.5rem;
+}
+#scene-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 42%, rgba(201,168,76,.08) 0%, transparent 58%);
+  pointer-events: none;
+}
+#cta-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .8vw; letter-spacing: .5em; color: var(--gold); text-transform: uppercase;
+  position: relative; z-index: 1; opacity: 0; will-change: transform, opacity;
+}
+#cta-title {
+  font-family: 'Playfair Display', serif; font-weight: 900;
+  font-size: 7vw; color: var(--white); line-height: 1.0;
+  position: relative; z-index: 1; opacity: 0; will-change: transform, opacity;
+}
+#cta-rule {
+  width: 80px; height: 1px; background: var(--gold);
+  position: relative; z-index: 1; opacity: 0;
+}
+#cta-features {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 1vw; color: var(--blush); line-height: 2;
+  position: relative; z-index: 1; opacity: 0; will-change: transform, opacity;
+}
+#cta-price {
+  font-family: 'Playfair Display', serif; font-size: 3vw; color: var(--gold); line-height: 1;
+  position: relative; z-index: 1; opacity: 0; will-change: transform, opacity;
+}
+#cta-btn {
+  font-family: 'JetBrains Mono', monospace; font-weight: 400;
+  font-size: .9vw; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold); border: 1px solid var(--gold); background: transparent;
+  padding: 1.2rem 3rem; cursor: pointer;
+  position: relative; z-index: 1; overflow: hidden;
+  opacity: 0; will-change: transform, opacity; transition: color .4s ease;
+}
+#cta-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold); transform: translateX(-101%);
+  transition: transform .4s ease; z-index: 0;
+}
+#cta-btn:hover { color: var(--obsidian); }
+#cta-btn:hover::before { transform: translateX(0); }
+#cta-btn > span { position: relative; z-index: 1; }
+#cta-fine {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 1vw; letter-spacing: .15em;
+  color: var(--blush); position: relative; z-index: 1; opacity: 0; will-change: opacity;
+}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+#footer {
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem; border-top: 1px solid rgba(201,168,76,.18);
+}
+.f-logo { font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: .8rem; letter-spacing: .3em; color: var(--gold); }
+.f-copy { font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: .75vw; color: var(--blush); }
+.f-ig { color: var(--gold); opacity: .65; transition: opacity .25s; line-height: 0; }
+.f-ig:hover { opacity: 1; }
+.f-ig svg { width: 18px; height: 18px; }
+
+/* ═══════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── FIX 6: overflow ── */
+  body { overflow-x: hidden; }
+
+  /* ── FIX 1/2: Hero letters ── */
+  .hl { font-size: 22vw; letter-spacing: .1em; }
+  .hd { font-size: 9vw; }
+  #hero-decoded { font-size: 4vw; letter-spacing: .4em; }
+  #hero-vp-1    { font-size: 3.5vw; }
+  #hero-vp-2    { font-size: 3.2vw; }
+  #hero-hint    { font-size: 2.2vw; }
+
+  /* ── FIX 3: Story — photo on top, text below ── */
+  #scene-story  {
+    grid-template-columns: 1fr;
+    height: auto; min-height: 100vh;
+  }
+  #story-right  {
+    display: block;
+    height: 50vh;
+    order: -1;
+    position: relative;
+  }
+  #story-left   {
+    padding: 2rem;
+    background: rgba(13,10,8,0.88);
+    justify-content: flex-start;
+    padding-top: 2.5rem;
+  }
+  #story-label  { font-size: 2.5vw; }
+  #story-pre    { font-size: 3.5vw; }
+  #story-line-1 { font-size: 7vw; line-height: 1.3; }
+  #story-line-2 { font-size: 9vw; line-height: 1.2; }
+  #story-line-3 { font-size: 7vw; line-height: 1.3; }
+  #story-byline { font-size: 3vw; }
+
+  /* ── FIX 2: Pain point ── */
+  #scene-pain   { height: auto; min-height: 100vh; padding: 3rem 1.5rem; }
+  #pain-label   { font-size: 2.5vw; letter-spacing: .3em; }
+  #pain-main    { font-size: 6.5vw; line-height: 1.4; }
+  #pain-sub     { font-size: 3.8vw; line-height: 1.8; }
+  #pain-closer  { font-size: 5vw; }
+
+  /* ── FIX 5: Coordinate/Duomo scene ── */
+  #duomo-label .d-coord  { font-size: 2.5vw; }
+  #duomo-label .d-bridge { font-size: 6vw; line-height: 1.4; }
+  #duomo-label .d-sub    { font-size: 2.2vw; }
+
+  /* ── FIX 4: Fashion Week — polaroid in flow ── */
+  #scene-mfw {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto; min-height: 100vh;
+    padding: 3rem 2rem 2rem;
+  }
+  #mfw-content  { padding: 0 0 1.5rem; max-width: 100%; }
+  #mfw-frame    {
+    position: relative;
+    top: auto; right: auto;
+    transform: rotate(-2deg);
+    width: 160px; margin: 0 auto;
+    will-change: auto;
+  }
+  #mfw-frame img    { height: 200px; width: 100%; }
+  #mfw-eyebrow      { font-size: 2.5vw; }
+  #mfw-quote        { font-size: 5.5vw; }
+  .mfw-badge        { font-size: 2.2vw; }
+  .mfw-frame-caption { font-size: 2.2vw; }
+
+  /* ── FIX 5: Numbers ── */
+  #num-grid  { grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
+  .num-val   { font-size: 18vw; }
+  .num-label { font-size: 3vw; }
+  .num-item  { padding: 2rem; }
+
+  /* Location cards */
+  .loc-card  { width: 88vw; right: 6%; }
+  .lc-coord  { font-size: 2.5vw; }
+  .lc-name   { font-size: 8vw; }
+  .lc-desc   { font-size: 3vw; }
+  .lc-count  { font-size: 2.2vw; }
+
+  /* ── FIX 6: Bar Basso / Inside ── */
+  #section-inside { grid-template-columns: 1fr; }
+  #ins-right  { display: none; }
+  .ins-name   { font-size: 9vw; }
+  .ins-coord  { font-size: 2.5vw; }
+  .ins-quote  { font-size: 4vw; line-height: 1.7; }
+  .ins-addr   { font-size: 3.5vw; }
+  .ins-meta   { font-size: 2.2vw; }
+
+  /* ── Neighborhoods — 2-col grid ── */
+  #scene-neighborhoods { padding-top: 4rem; }
+  #nb-header-1   { font-size: 10vw; }
+  #nb-header-2   { font-size: 7vw; }
+  #nb-header-sub { font-size: 3vw; }
+  #nb-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.8rem !important;
+    padding: 1rem !important;
+    width: 100vw !important;
+    box-sizing: border-box;
+  }
+  .nb-card {
+    border: 1px solid rgba(201,168,76,0.3) !important;
+    min-height: 260px !important;
+    padding: 1.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .nb-name  { font-size: 5.5vw; }
+  .nb-desc  { font-size: 3vw; }
+  .nb-coord { font-size: 2vw; }
+  .nb-tag   { font-size: 2vw; }
+
+  /* ── FIX 2: CTA ── */
+  #cta-eyebrow  { font-size: 2.5vw; }
+  #cta-title    { font-size: 12vw; }
+  #cta-features { font-size: 3vw; }
+  #cta-price    { font-size: 10vw; }
+  #cta-btn      { font-size: 3.5vw; padding: 1rem 2rem; }
+  #cta-fine     { font-size: 2.5vw; }
+  #social-proof { font-size: 3vw; }
+
+  /* Countdown */
+  .cd-num   { font-size: 8vw; }
+  .cd-unit  { font-size: 2vw; }
+  .cd-sep   { font-size: 6vw; }
+  #cd-label { font-size: 2.2vw; }
+
+  /* ── FIX 6: Easter eggs ── */
+  .easter-egg svg { width: 16px; height: 16px; }
+  .egg-tooltip    { font-size: 10px; width: 180px; }
+
+  /* Misc */
+  .fc-item { display: none; }
+}
+/* ═══════════════════════════════════════
+   MADONNINA GLOW PULSE
+═══════════════════════════════════════ */
+#madonnina {
+  transform-box: fill-box; transform-origin: center;
+  animation: madonna-pulse 2.5s ease-in-out infinite;
+}
+@keyframes madonna-pulse {
+  0%,100% { transform: scale(1.0); opacity: 0.6; filter: drop-shadow(0 0 3px rgba(201,168,76,.75)); }
+  50%     { transform: scale(1.18); opacity: 1.0; filter: drop-shadow(0 0 10px rgba(201,168,76,1.0)); }
+}
+
+/* ═══════════════════════════════════════
+   HERO LETTER MORPH (L→T)
+═══════════════════════════════════════ */
+#hl-l { position: relative; }
+#it-T {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ═══════════════════════════════════════
+   NEIGHBORHOOD ICONS
+═══════════════════════════════════════ */
+.nb-icon {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 48px; height: 48px; pointer-events: none; opacity: 0;
+}
+.nb-icon svg { width: 48px; height: 48px; overflow: visible; }
+
+/* ═══════════════════════════════════════
+   HERO VALUE PROPOSITION
+═══════════════════════════════════════ */
+#hero-vp {
+  display: flex; flex-direction: column; align-items: center; gap: .4rem;
+  text-align: center; position: relative; z-index: 2;
+  margin-top: 1rem; opacity: 0; will-change: opacity;
+}
+#hero-vp-1 {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 1.1vw; color: var(--blush); letter-spacing: .05em; opacity: .8;
+}
+#hero-vp-2 {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .95vw; color: var(--gold); letter-spacing: .05em; opacity: .6;
+}
+
+/* ═══════════════════════════════════════
+   DUOMO BRIDGE TEXT
+═══════════════════════════════════════ */
+.d-bridge {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 4.5vw; color: var(--white); line-height: 1.4; text-align: center;
+}
+.d-sub {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .8vw; letter-spacing: .3em; color: var(--gold);
+  text-transform: uppercase; margin-top: 1.5rem; opacity: .7;
+}
+
+/* ═══════════════════════════════════════
+   SCENE PAIN POINT
+═══════════════════════════════════════ */
+#scene-pain {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--obsidian); text-align: center; padding: 0 2rem;
+}
+#pain-label {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .4em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 2.5rem;
+  opacity: 0; will-change: opacity, transform;
+}
+#pain-main {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 3vw; color: var(--white); line-height: 1.5;
+  margin-bottom: 2.5rem; max-width: 700px;
+  opacity: 0; will-change: opacity, transform;
+}
+#pain-sub {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 1vw; color: var(--blush); line-height: 1.9;
+  margin-bottom: 2.5rem; max-width: 620px;
+  opacity: 0; will-change: opacity, transform;
+}
+#pain-rule {
+  width: 60px; height: 1px; background: var(--gold);
+  margin-bottom: 2.5rem; opacity: 0;
+}
+#pain-closer {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 2vw; color: var(--gold); max-width: 700px;
+  opacity: 0; will-change: opacity, transform;
+}
+
+/* ═══════════════════════════════════════
+   STORY ADDITIONS
+═══════════════════════════════════════ */
+#story-label {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .4em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 1rem;
+  opacity: 0; will-change: opacity;
+}
+#story-pre {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .9vw; color: var(--blush); margin-bottom: 1.5rem;
+  opacity: 0; will-change: opacity;
+}
+
+/* ═══════════════════════════════════════
+   NEIGHBORHOODS HEADER
+═══════════════════════════════════════ */
+#nb-header {
+  text-align: center; position: relative; z-index: 2;
+  max-width: 700px; margin-bottom: 1.5rem;
+  opacity: 0; will-change: opacity, transform;
+}
+#nb-header-1 {
+  font-family: 'Playfair Display', serif; font-weight: 900;
+  font-size: 6vw; color: var(--white); line-height: 1.1;
+}
+#nb-header-2 {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 4vw; color: var(--gold); line-height: 1.2; margin-bottom: .8rem;
+}
+#nb-header-sub {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: 1vw; color: var(--blush); line-height: 1.7; opacity: .75;
+}
+
+/* ═══════════════════════════════════════
+   EASTER EGGS (re-implemented)
+═══════════════════════════════════════ */
+.easter-egg {
+  position: absolute; cursor: pointer; z-index: 100;
+  animation: float 3s ease-in-out infinite;
+}
+.easter-egg svg {
+  width: 22px; height: 22px;
+  stroke: #C9A84C; fill: none;
+  stroke-width: 1px; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: block;
+}
+.easter-egg:hover svg { opacity: 1; transform: scale(1.2); }
+.egg-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 12px); left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13,10,8,0.97);
+  border: 1px solid rgba(201,168,76,0.35);
+  padding: 12px 16px; width: 220px;
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: 11px; color: var(--blush); line-height: 1.6;
+  pointer-events: none; white-space: normal; z-index: 101; text-align: left;
+}
+.easter-egg:hover .egg-tooltip { display: block; }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #grain { animation: none !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+  </style>
+</head>
+<body>
+
+<div id="grain"></div>
+<a id="logo" href="#hero">M·D</a>
+<button id="hamburger" aria-label="Open menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+
+<div id="nav-backdrop"></div>
+<div id="nav-overlay" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <nav>
+    <ul>
+      <li><a href="#hero"                class="nl"><span class="nav-idx">01</span>Home</a></li>
+      <li><a href="#scene-story"         class="nl"><span class="nav-idx">02</span>Story</a></li>
+      <li><a href="#scene-mfw"           class="nl"><span class="nav-idx">03</span>Fashion Week</a></li>
+      <li><a href="#scene-neighborhoods" class="nl"><span class="nav-idx">04</span>Neighborhoods</a></li>
+      <li><a href="#scene-cta"           class="nl"><span class="nav-idx">05</span>The Guide</a></li>
+      <li><a href="mailto:contact@milandecoded.com" class="nl"><span class="nav-idx">06</span>Contact</a></li>
+    </ul>
+  </nav>
+</div>
+
+<div id="preloader">
+  <div id="preloader-coords"></div>
+  <p id="preloader-locating">locating milan</p>
+</div>
+
+<!-- ── Fixed Duomo SVG watermark ── -->
+<div id="duomo-svg-wrap">
+  <svg id="duomo-svg" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg"
+       preserveAspectRatio="xMidYMid meet">
+
+    <!-- GROUP 1 ── Base horizontal line -->
+    <g id="d-g1" stroke="#C9A84C" stroke-linecap="round">
+      <line x1="30" y1="576" x2="1170" y2="576" stroke-width="1.8"/>
+    </g>
+
+    <!-- GROUP 2 ── Five portal arches, left → right -->
+    <g id="d-g2" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Far-left portal -->
+      <path d="M88,576 C88,514 163,456 163,456 C163,456 238,514 238,576" stroke-width="1.1"/>
+      <path d="M103,576 C103,522 163,468 163,468 C163,468 223,522 223,576" stroke-width="0.5" opacity="0.45"/>
+      <line x1="88"  y1="456" x2="88"  y2="576" stroke-width="0.8" opacity="0.35"/>
+      <line x1="238" y1="456" x2="238" y2="576" stroke-width="0.8" opacity="0.35"/>
+      <!-- Left-center portal -->
+      <path d="M272,576 C272,498 368,428 368,428 C368,428 464,498 464,576" stroke-width="1.15"/>
+      <path d="M288,576 C288,506 368,442 368,442 C368,442 448,506 448,576" stroke-width="0.5" opacity="0.45"/>
+      <line x1="272" y1="428" x2="272" y2="576" stroke-width="0.9" opacity="0.35"/>
+      <line x1="464" y1="428" x2="464" y2="576" stroke-width="0.9" opacity="0.35"/>
+      <!-- Central portal — widest and tallest -->
+      <path d="M478,576 C478,464 600,362 600,362 C600,362 722,464 722,576" stroke-width="1.4"/>
+      <path d="M497,576 C497,472 600,378 600,378 C600,378 703,472 703,576" stroke-width="0.6" opacity="0.45"/>
+      <line x1="478" y1="362" x2="478" y2="576" stroke-width="1.0" opacity="0.35"/>
+      <line x1="722" y1="362" x2="722" y2="576" stroke-width="1.0" opacity="0.35"/>
+      <!-- Right-center portal -->
+      <path d="M736,576 C736,498 832,428 832,428 C832,428 928,498 928,576" stroke-width="1.15"/>
+      <path d="M752,576 C752,506 832,442 832,442 C832,442 912,506 912,576" stroke-width="0.5" opacity="0.45"/>
+      <line x1="736" y1="428" x2="736" y2="576" stroke-width="0.9" opacity="0.35"/>
+      <line x1="928" y1="428" x2="928" y2="576" stroke-width="0.9" opacity="0.35"/>
+      <!-- Far-right portal -->
+      <path d="M962,576 C962,514 1037,456 1037,456 C1037,456 1112,514 1112,576" stroke-width="1.1"/>
+      <path d="M977,576 C977,522 1037,468 1037,468 C1037,468 1097,522 1097,576" stroke-width="0.5" opacity="0.45"/>
+      <line x1="962"  y1="456" x2="962"  y2="576" stroke-width="0.8" opacity="0.35"/>
+      <line x1="1112" y1="456" x2="1112" y2="576" stroke-width="0.8" opacity="0.35"/>
+    </g>
+
+    <!-- GROUP 3 ── Main wall sections, cornices, belt courses -->
+    <g id="d-g3" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Outer left / right walls -->
+      <line x1="38"   y1="576" x2="38"   y2="368" stroke-width="1.2"/>
+      <line x1="1162" y1="576" x2="1162" y2="368" stroke-width="1.2"/>
+      <!-- Outer cornice y=368 -->
+      <line x1="38"   y1="368" x2="252"  y2="368" stroke-width="1.0"/>
+      <line x1="948"  y1="368" x2="1162" y2="368" stroke-width="1.0"/>
+      <!-- Outer → inner step walls -->
+      <line x1="252"  y1="576" x2="252"  y2="368" stroke-width="1.0"/>
+      <line x1="948"  y1="576" x2="948"  y2="368" stroke-width="1.0"/>
+      <!-- Inner cornice y=298 -->
+      <line x1="252"  y1="298" x2="450"  y2="298" stroke-width="0.9"/>
+      <line x1="750"  y1="298" x2="948"  y2="298" stroke-width="0.9"/>
+      <!-- Inner → central step walls -->
+      <line x1="450"  y1="576" x2="450"  y2="298" stroke-width="0.9"/>
+      <line x1="750"  y1="576" x2="750"  y2="298" stroke-width="0.9"/>
+      <!-- Central cornice y=212 -->
+      <line x1="450"  y1="212" x2="750"  y2="212" stroke-width="0.9"/>
+      <!-- Horizontal belt courses -->
+      <line x1="38"   y1="442" x2="1162" y2="442" stroke-width="0.55" opacity="0.32"/>
+      <line x1="38"   y1="512" x2="1162" y2="512" stroke-width="0.45" opacity="0.22"/>
+      <!-- Decorative vertical ribs on central section -->
+      <line x1="510"  y1="576" x2="510"  y2="212" stroke-width="0.45" opacity="0.28"/>
+      <line x1="560"  y1="576" x2="560"  y2="212" stroke-width="0.45" opacity="0.28"/>
+      <line x1="640"  y1="576" x2="640"  y2="212" stroke-width="0.45" opacity="0.28"/>
+      <line x1="690"  y1="576" x2="690"  y2="212" stroke-width="0.45" opacity="0.28"/>
+    </g>
+
+    <!-- GROUP 4 ── Side towers, flying buttresses, tympanum ornaments -->
+    <g id="d-g4" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Flying buttresses — outer -->
+      <line x1="38"   y1="415" x2="120"  y2="484" stroke-width="0.85" opacity="0.48"/>
+      <line x1="1162" y1="415" x2="1080" y2="484" stroke-width="0.85" opacity="0.48"/>
+      <!-- Flying buttresses — inner -->
+      <line x1="252"  y1="355" x2="318"  y2="418" stroke-width="0.7"  opacity="0.42"/>
+      <line x1="948"  y1="355" x2="882"  y2="418" stroke-width="0.7"  opacity="0.42"/>
+      <line x1="450"  y1="282" x2="502"  y2="340" stroke-width="0.65" opacity="0.38"/>
+      <line x1="750"  y1="282" x2="698"  y2="340" stroke-width="0.65" opacity="0.38"/>
+      <!-- Blind arcading left outer section -->
+      <path d="M52,460  C52,444  78,428  78,428  C78,428  104,444 104,460"  stroke-width="0.55" opacity="0.42"/>
+      <path d="M110,460 C110,444 136,428 136,428 C136,428 162,444 162,460" stroke-width="0.55" opacity="0.42"/>
+      <path d="M170,460 C170,444 196,428 196,428 C196,428 222,444 222,460" stroke-width="0.55" opacity="0.42"/>
+      <!-- Blind arcading right outer section -->
+      <path d="M978,460  C978,444  1004,428 1004,428 C1004,428 1030,444 1030,460" stroke-width="0.55" opacity="0.42"/>
+      <path d="M1038,460 C1038,444 1064,428 1064,428 C1064,428 1090,444 1090,460" stroke-width="0.55" opacity="0.42"/>
+      <path d="M1096,460 C1096,444 1122,428 1122,428 C1122,428 1148,444 1148,460" stroke-width="0.55" opacity="0.42"/>
+      <!-- Tympanum circles above far portals -->
+      <circle cx="163"  cy="494" r="22" stroke-width="0.6" opacity="0.48"/>
+      <circle cx="163"  cy="494" r="14" stroke-width="0.5" opacity="0.38"/>
+      <circle cx="1037" cy="494" r="22" stroke-width="0.6" opacity="0.48"/>
+      <circle cx="1037" cy="494" r="14" stroke-width="0.5" opacity="0.38"/>
+      <!-- Tympanum circles above center-portals -->
+      <circle cx="368"  cy="480" r="28" stroke-width="0.6" opacity="0.42"/>
+      <circle cx="832"  cy="480" r="28" stroke-width="0.6" opacity="0.42"/>
+    </g>
+
+    <!-- GROUP 5 ── Central mass, central gable, rose window -->
+    <g id="d-g5" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Central gable triangle -->
+      <path d="M450,212 L600,155 L750,212" stroke-width="1.1"/>
+      <!-- Gable finial -->
+      <line x1="600" y1="155" x2="600" y2="118" stroke-width="1.0"/>
+      <!-- Central tympanum above main portal -->
+      <circle cx="600" cy="426" r="32" stroke-width="0.65" opacity="0.42"/>
+      <circle cx="600" cy="426" r="22" stroke-width="0.5"  opacity="0.36"/>
+      <path d="M572,426 C572,410 585,400 600,400 C615,400 628,410 628,426" stroke-width="0.5" opacity="0.42"/>
+      <!-- Rose window — outer ring -->
+      <circle id="rw-outer" cx="600" cy="248" r="58"  stroke-width="1.0"/>
+      <!-- Rose window — tracery rings -->
+      <circle id="rw-r1"    cx="600" cy="248" r="46"  stroke-width="0.65"/>
+      <circle id="rw-r2"    cx="600" cy="248" r="32"  stroke-width="0.6"/>
+      <circle id="rw-hub"   cx="600" cy="248" r="11"  stroke-width="0.65"/>
+      <!-- Spokes: 12 at 30° intervals -->
+      <line x1="600" y1="190" x2="600" y2="306" stroke-width="0.5" opacity="0.72"/>
+      <line x1="542" y1="248" x2="658" y2="248" stroke-width="0.5" opacity="0.72"/>
+      <line x1="559" y1="207" x2="641" y2="289" stroke-width="0.5" opacity="0.58"/>
+      <line x1="641" y1="207" x2="559" y2="289" stroke-width="0.5" opacity="0.58"/>
+      <line x1="550" y1="227" x2="650" y2="269" stroke-width="0.5" opacity="0.42"/>
+      <line x1="550" y1="269" x2="650" y2="227" stroke-width="0.5" opacity="0.42"/>
+      <line x1="580" y1="190" x2="620" y2="306" stroke-width="0.5" opacity="0.42"/>
+      <line x1="620" y1="190" x2="580" y2="306" stroke-width="0.5" opacity="0.42"/>
+      <!-- Petal circles at r=40 -->
+      <circle cx="600" cy="208" r="7" stroke-width="0.5" opacity="0.52"/>
+      <circle cx="600" cy="288" r="7" stroke-width="0.5" opacity="0.52"/>
+      <circle cx="560" cy="248" r="7" stroke-width="0.5" opacity="0.52"/>
+      <circle cx="640" cy="248" r="7" stroke-width="0.5" opacity="0.52"/>
+      <circle cx="571" cy="219" r="6" stroke-width="0.5" opacity="0.42"/>
+      <circle cx="629" cy="219" r="6" stroke-width="0.5" opacity="0.42"/>
+      <circle cx="571" cy="277" r="6" stroke-width="0.5" opacity="0.42"/>
+      <circle cx="629" cy="277" r="6" stroke-width="0.5" opacity="0.42"/>
+      <!-- Trefoil above rose window -->
+      <path d="M564,190 C552,173 564,159 580,159 A18,18 0 0 0 620,159 C636,159 648,173 636,190" stroke-width="0.6" opacity="0.48"/>
+    </g>
+
+    <!-- GROUP 6 ── Roofline pinnacles, left → right -->
+    <g id="d-g6" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Outer-left roofline (y=368) -->
+      <path d="M54,368  L54,354  L62,338  L70,354  L70,368"  stroke-width="0.75"/>
+      <path d="M80,368  L80,356  L88,341  L96,356  L96,368"  stroke-width="0.75"/>
+      <path d="M108,368 L108,354 L116,338 L124,354 L124,368" stroke-width="0.75"/>
+      <path d="M136,368 L136,356 L143,342 L150,356 L150,368" stroke-width="0.75"/>
+      <path d="M162,368 L162,354 L170,338 L178,354 L178,368" stroke-width="0.75"/>
+      <path d="M190,368 L190,356 L197,342 L204,356 L204,368" stroke-width="0.75"/>
+      <path d="M218,368 L218,354 L226,338 L234,354 L234,368" stroke-width="0.75"/>
+      <!-- Outer-right roofline -->
+      <path d="M966,368  L966,354  L974,338  L982,354  L982,368"  stroke-width="0.75"/>
+      <path d="M996,368  L996,356  L1003,342 L1010,356 L1010,368" stroke-width="0.75"/>
+      <path d="M1024,368 L1024,354 L1032,338 L1040,354 L1040,368" stroke-width="0.75"/>
+      <path d="M1052,368 L1052,356 L1059,342 L1066,356 L1066,368" stroke-width="0.75"/>
+      <path d="M1080,368 L1080,354 L1088,338 L1096,354 L1096,368" stroke-width="0.75"/>
+      <path d="M1108,368 L1108,356 L1115,342 L1122,356 L1122,368" stroke-width="0.75"/>
+      <path d="M1136,368 L1136,354 L1144,338 L1152,354 L1152,368" stroke-width="0.75"/>
+      <!-- Inner-left roofline (y=298) -->
+      <path d="M264,298 L264,284 L272,269 L280,284 L280,298" stroke-width="0.72"/>
+      <path d="M294,298 L294,286 L301,272 L308,286 L308,298" stroke-width="0.72"/>
+      <path d="M322,298 L322,284 L330,269 L338,284 L338,298" stroke-width="0.72"/>
+      <path d="M352,298 L352,286 L359,272 L366,286 L366,298" stroke-width="0.72"/>
+      <path d="M382,298 L382,284 L390,269 L398,284 L398,298" stroke-width="0.72"/>
+      <path d="M412,298 L412,286 L419,272 L426,286 L426,298" stroke-width="0.72"/>
+      <path d="M434,298 L434,284 L442,269 L450,284 L450,298" stroke-width="0.72"/>
+      <!-- Inner-right roofline -->
+      <path d="M750,298 L750,284 L758,269 L766,284 L766,298" stroke-width="0.72"/>
+      <path d="M778,298 L778,286 L785,272 L792,286 L792,298" stroke-width="0.72"/>
+      <path d="M808,298 L808,284 L816,269 L824,284 L824,298" stroke-width="0.72"/>
+      <path d="M838,298 L838,286 L845,272 L852,286 L852,298" stroke-width="0.72"/>
+      <path d="M866,298 L866,284 L874,269 L882,284 L882,298" stroke-width="0.72"/>
+      <path d="M896,298 L896,286 L903,272 L910,286 L910,298" stroke-width="0.72"/>
+      <path d="M924,298 L924,284 L932,269 L940,284 L940,298" stroke-width="0.72"/>
+      <!-- Upper-central roofline (y=212) -->
+      <path d="M462,212 L462,198 L470,183 L478,198 L478,212" stroke-width="0.72"/>
+      <path d="M492,212 L492,200 L499,186 L506,200 L506,212" stroke-width="0.72"/>
+      <path d="M522,212 L522,198 L530,183 L538,198 L538,212" stroke-width="0.72"/>
+      <path d="M662,212 L662,198 L670,183 L678,198 L678,212" stroke-width="0.72"/>
+      <path d="M692,212 L692,200 L699,186 L706,200 L706,212" stroke-width="0.72"/>
+      <path d="M722,212 L722,198 L730,183 L738,198 L738,212" stroke-width="0.72"/>
+    </g>
+
+    <!-- GROUP 7 ── Secondary and flanking spires (all except central) -->
+    <g id="d-g7" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Spire A — far-left outer -->
+      <line x1="82"  y1="368" x2="82"  y2="314" stroke-width="0.8"/>
+      <line x1="98"  y1="368" x2="98"  y2="314" stroke-width="0.8"/>
+      <path d="M74,314 L90,210 L106,314 Z" stroke-width="1.0"/>
+      <!-- Spire B — left outer cluster -->
+      <line x1="130" y1="368" x2="130" y2="304" stroke-width="0.8"/>
+      <line x1="148" y1="368" x2="148" y2="304" stroke-width="0.8"/>
+      <path d="M122,304 L139,192 L156,304 Z" stroke-width="1.0"/>
+      <!-- Spire C — left outer edge -->
+      <line x1="196" y1="368" x2="196" y2="294" stroke-width="0.8"/>
+      <line x1="214" y1="368" x2="214" y2="294" stroke-width="0.8"/>
+      <path d="M188,294 L205,178 L222,294 Z" stroke-width="1.05"/>
+      <!-- Spire D — left inner small -->
+      <line x1="278" y1="298" x2="278" y2="244" stroke-width="0.8"/>
+      <line x1="296" y1="298" x2="296" y2="244" stroke-width="0.8"/>
+      <path d="M270,244 L287,140 L304,244 Z" stroke-width="1.0"/>
+      <!-- Spire E — left inner medium -->
+      <line x1="312" y1="298" x2="312" y2="234" stroke-width="0.85"/>
+      <line x1="332" y1="298" x2="332" y2="234" stroke-width="0.85"/>
+      <path d="M303,234 L322,116 L341,234 Z" stroke-width="1.1"/>
+      <line x1="307" y1="196" x2="337" y2="196" stroke-width="0.5" opacity="0.48"/>
+      <line x1="311" y1="162" x2="333" y2="162" stroke-width="0.5" opacity="0.42"/>
+      <!-- Spire F — left inner large -->
+      <line x1="362" y1="298" x2="362" y2="222" stroke-width="0.9"/>
+      <line x1="384" y1="298" x2="384" y2="222" stroke-width="0.9"/>
+      <path d="M353,222 L373,98  L393,222 Z" stroke-width="1.15"/>
+      <line x1="357" y1="185" x2="389" y2="185" stroke-width="0.5" opacity="0.5"/>
+      <line x1="361" y1="150" x2="385" y2="150" stroke-width="0.5" opacity="0.45"/>
+      <line x1="365" y1="122" x2="381" y2="122" stroke-width="0.5" opacity="0.4"/>
+      <!-- Spire G — left-flanking-central, tall -->
+      <line x1="462" y1="212" x2="462" y2="148" stroke-width="1.0"/>
+      <line x1="490" y1="212" x2="490" y2="148" stroke-width="1.0"/>
+      <path d="M451,148 L476,36 L501,148 Z" stroke-width="1.2"/>
+      <line x1="455" y1="118" x2="497" y2="118" stroke-width="0.55" opacity="0.5"/>
+      <line x1="459" y1="88"  x2="493" y2="88"  stroke-width="0.55" opacity="0.45"/>
+      <line x1="463" y1="62"  x2="489" y2="62"  stroke-width="0.5"  opacity="0.4"/>
+      <!-- Spire H — central-cluster left -->
+      <line x1="530" y1="212" x2="530" y2="162" stroke-width="0.8"/>
+      <line x1="548" y1="212" x2="548" y2="162" stroke-width="0.8"/>
+      <path d="M521,162 L539,60  L557,162 Z" stroke-width="1.0"/>
+      <line x1="525" y1="132" x2="553" y2="132" stroke-width="0.5" opacity="0.45"/>
+      <line x1="529" y1="104" x2="549" y2="104" stroke-width="0.5" opacity="0.4"/>
+      <!-- Spire I — central-cluster right -->
+      <line x1="652" y1="212" x2="652" y2="162" stroke-width="0.8"/>
+      <line x1="670" y1="212" x2="670" y2="162" stroke-width="0.8"/>
+      <path d="M643,162 L661,60  L679,162 Z" stroke-width="1.0"/>
+      <line x1="647" y1="132" x2="675" y2="132" stroke-width="0.5" opacity="0.45"/>
+      <line x1="651" y1="104" x2="669" y2="104" stroke-width="0.5" opacity="0.4"/>
+      <!-- Spire J — right-flanking-central, tall -->
+      <line x1="710" y1="212" x2="710" y2="148" stroke-width="1.0"/>
+      <line x1="738" y1="212" x2="738" y2="148" stroke-width="1.0"/>
+      <path d="M699,148 L724,36 L749,148 Z" stroke-width="1.2"/>
+      <line x1="703" y1="118" x2="745" y2="118" stroke-width="0.55" opacity="0.5"/>
+      <line x1="707" y1="88"  x2="741" y2="88"  stroke-width="0.55" opacity="0.45"/>
+      <line x1="711" y1="62"  x2="737" y2="62"  stroke-width="0.5"  opacity="0.4"/>
+      <!-- Spire K — right inner large -->
+      <line x1="816" y1="298" x2="816" y2="222" stroke-width="0.9"/>
+      <line x1="838" y1="298" x2="838" y2="222" stroke-width="0.9"/>
+      <path d="M807,222 L827,98  L847,222 Z" stroke-width="1.15"/>
+      <line x1="811" y1="185" x2="843" y2="185" stroke-width="0.5" opacity="0.5"/>
+      <line x1="815" y1="150" x2="839" y2="150" stroke-width="0.5" opacity="0.45"/>
+      <line x1="819" y1="122" x2="835" y2="122" stroke-width="0.5" opacity="0.4"/>
+      <!-- Spire L — right inner medium -->
+      <line x1="868" y1="298" x2="868" y2="234" stroke-width="0.85"/>
+      <line x1="888" y1="298" x2="888" y2="234" stroke-width="0.85"/>
+      <path d="M859,234 L878,116 L897,234 Z" stroke-width="1.1"/>
+      <line x1="863" y1="196" x2="893" y2="196" stroke-width="0.5" opacity="0.48"/>
+      <line x1="867" y1="162" x2="889" y2="162" stroke-width="0.5" opacity="0.42"/>
+      <!-- Spire M — right inner small -->
+      <line x1="904" y1="298" x2="904" y2="244" stroke-width="0.8"/>
+      <line x1="922" y1="298" x2="922" y2="244" stroke-width="0.8"/>
+      <path d="M896,244 L913,140 L930,244 Z" stroke-width="1.0"/>
+      <!-- Spire N — right outer edge -->
+      <line x1="986"  y1="368" x2="986"  y2="294" stroke-width="0.8"/>
+      <line x1="1004" y1="368" x2="1004" y2="294" stroke-width="0.8"/>
+      <path d="M978,294 L995,178 L1012,294 Z" stroke-width="1.05"/>
+      <!-- Spire O — right outer cluster -->
+      <line x1="1052" y1="368" x2="1052" y2="304" stroke-width="0.8"/>
+      <line x1="1070" y1="368" x2="1070" y2="304" stroke-width="0.8"/>
+      <path d="M1044,304 L1061,192 L1078,304 Z" stroke-width="1.0"/>
+      <!-- Spire P — far-right outer -->
+      <line x1="1102" y1="368" x2="1102" y2="314" stroke-width="0.8"/>
+      <line x1="1118" y1="368" x2="1118" y2="314" stroke-width="0.8"/>
+      <path d="M1094,314 L1110,210 L1126,314 Z" stroke-width="1.0"/>
+    </g>
+
+    <!-- GROUP 8 ── Central tallest spire -->
+    <g id="d-g8" stroke="#C9A84C" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="582" y1="212" x2="582" y2="136" stroke-width="1.15"/>
+      <line x1="618" y1="212" x2="618" y2="136" stroke-width="1.15"/>
+      <path d="M568,136 L600,16 L632,136 Z" stroke-width="1.5"/>
+      <line x1="573" y1="116" x2="627" y2="116" stroke-width="0.6"/>
+      <line x1="578" y1="94"  x2="622" y2="94"  stroke-width="0.6"/>
+      <line x1="582" y1="74"  x2="618" y2="74"  stroke-width="0.55"/>
+      <line x1="586" y1="56"  x2="614" y2="56"  stroke-width="0.5"/>
+      <line x1="590" y1="40"  x2="610" y2="40"  stroke-width="0.5"/>
+    </g>
+
+    <!-- GROUP 9 ── Madonnina star at apex (pulses gold) -->
+    <g id="madonnina" stroke="#C9A84C" stroke-linecap="round">
+      <circle cx="600" cy="16" r="5.5" stroke-width="1.1"/>
+      <line x1="600" y1="5"  x2="600" y2="-3" stroke-width="1.0"/>
+      <line x1="611" y1="16" x2="619" y2="16" stroke-width="1.0"/>
+      <line x1="600" y1="27" x2="600" y2="35" stroke-width="1.0"/>
+      <line x1="589" y1="16" x2="581" y2="16" stroke-width="1.0"/>
+      <line x1="608" y1="8"  x2="614" y2="2"  stroke-width="0.75"/>
+      <line x1="608" y1="24" x2="614" y2="30" stroke-width="0.75"/>
+      <line x1="592" y1="24" x2="586" y2="30" stroke-width="0.75"/>
+      <line x1="592" y1="8"  x2="586" y2="2"  stroke-width="0.75"/>
+    </g>
+
+  </svg>
+</div>
+
+<!-- ════════════════════════════════════
+     MAIN
+════════════════════════════════════ -->
+<div id="main">
+
+  <!-- SCENE 1 — HERO -->
+  <section id="hero" class="scene">
+    <!-- Floating coordinates -->
+    <span class="fc-item" style="top:15%;left:8%;--fc-dur:9s;--fc-del:0s;opacity:.09">45.46°</span>
+    <span class="fc-item" style="top:72%;left:12%;--fc-dur:11s;--fc-del:1.2s;opacity:.07">MXP</span>
+    <span class="fc-item" style="top:28%;right:10%;--fc-dur:8s;--fc-del:2.1s;opacity:.1">9.19°</span>
+    <span class="fc-item" style="top:61%;right:15%;--fc-dur:10s;--fc-del:0.8s;opacity:.08">MI-01</span>
+    <span class="fc-item" style="top:82%;left:35%;--fc-dur:13s;--fc-del:3s;opacity:.06">45.46°N</span>
+    <span class="fc-item" style="top:20%;left:55%;--fc-dur:7s;--fc-del:1.5s;opacity:.07">MI</span>
+
+    <div id="hero-letters">
+      <span class="hl" id="hl-m">M</span>
+      <span class="hd" id="hd-1">·</span>
+      <span class="hl" id="hl-i">I</span>
+      <span class="hd" id="hd-2">·</span>
+      <span class="hl" id="hl-l"><span id="hl-l-text">L</span><span id="it-T">T</span></span>
+      <span class="hd" id="hd-3">·</span>
+      <span class="hl" id="hl-a">A</span>
+      <span class="hd" id="hd-4">·</span>
+      <span class="hl" id="hl-n">N</span>
+    </div>
+    <div id="hero-decoded"><span id="decoded-inner"></span><span id="decoded-cursor"></span></div>
+    <div id="hero-vp">
+      <p id="hero-vp-1">Milan has 10,000 restaurants. Tourists find 50.</p>
+      <p id="hero-vp-2">This is the other 50.</p>
+    </div>
+    <p id="hero-hint">scroll to enter ↓</p>
+  </section>
+
+  <!-- SCENE 2 — DUOMO SVG DRAWS IN -->
+  <section id="scene-duomo" class="scene">
+    <div class="scene-rule" id="rule-2"></div>
+    <!-- Floating coordinates -->
+    <span class="fc-item" style="top:10%;left:6%;--fc-dur:10s;--fc-del:0s;opacity:.1">45.4641°N</span>
+    <span class="fc-item" style="top:80%;right:8%;--fc-dur:8s;--fc-del:1.4s;opacity:.09">9.1900°E</span>
+    <span class="fc-item" style="top:45%;left:4%;--fc-dur:12s;--fc-del:2s;opacity:.07">DUOMO</span>
+    <span class="fc-item" style="top:18%;right:5%;--fc-dur:9s;--fc-del:0.6s;opacity:.08">MI-DU</span>
+    <span class="fc-item" style="top:65%;left:20%;--fc-dur:11s;--fc-del:3.2s;opacity:.06">1386 AD</span>
+
+    <div id="duomo-label">
+      <p class="d-coord">45.4642° N · 9.1900° E</p>
+      <p class="d-bridge">A city that rewards<br>those who know<br>where to look.</p>
+      <p class="d-sub">45 LOCATIONS · CURATED OVER 3 YEARS</p>
+    </div>
+    <div class="easter-egg" style="right:8%;top:15%;animation-delay:0s;">
+      <svg viewBox="0 0 22 22"><polygon points="11,2 13,8 19,8 14,12 16,18 11,14 6,18 8,12 3,8 9,8"/></svg>
+      <div class="egg-tooltip">La Madonnina crowns the Duomo at 108m. For centuries, no Milan building could stand taller. When a skyscraper broke the rule, they placed her replica on its roof. The city bows to her still.</div>
+    </div>
+  </section>
+
+  <!-- SCENE PAIN POINT -->
+  <section id="scene-pain" class="scene">
+    <div class="scene-rule" id="rule-pain"></div>
+    <p id="pain-label">The Problem With Milan</p>
+    <p id="pain-main">"Every 'hidden gem' article<br>sends 10,000 tourists<br>to the same place."</p>
+    <p id="pain-sub">The rooftop bars are overpriced.<br>The 'local' restaurants are on TripAdvisor.<br>The 'secret' streets are on every influencer's feed.</p>
+    <div id="pain-rule"></div>
+    <p id="pain-closer">Real Milan isn't hidden. It's just not indexed.</p>
+    <div class="easter-egg" style="right:12%;top:40%;animation-delay:0.5s;">
+      <svg viewBox="0 0 22 22"><circle cx="11" cy="13" r="6"/><path d="M6,10 Q3,5 5,2 Q7,3 7,7"/><path d="M16,10 Q19,5 17,2 Q15,3 15,7"/></svg>
+      <div class="egg-tooltip">In Galleria Vittorio Emanuele II, there is a mosaic bull on the marble floor. Step on it. Spin three times on your heel. Milanese tradition — do this and the city grants you good luck.</div>
+    </div>
+  </section>
+
+  <!-- SCENE 3 — HER STORY -->
+  <section id="scene-story" class="scene">
+    <div class="scene-rule" id="rule-3"></div>
+    <!-- Floating coordinates -->
+    <span class="fc-item" style="top:12%;right:6%;--fc-dur:9s;--fc-del:0s;opacity:.08">BU-2020</span>
+    <span class="fc-item" style="top:75%;left:8%;--fc-dur:11s;--fc-del:1.8s;opacity:.07">45.46°</span>
+    <span class="fc-item" style="top:50%;right:4%;--fc-dur:8s;--fc-del:2.5s;opacity:.09">MFW</span>
+    <span class="fc-item" style="top:88%;right:20%;--fc-dur:13s;--fc-del:0.4s;opacity:.06">9.19°E</span>
+
+    <div id="story-left">
+      <p id="story-label">Who Made This</p>
+      <p id="story-pre">Not a travel blogger. Not a content creator.</p>
+      <p id="story-line-1">I didn't come to Milan as a tourist.</p>
+      <p id="story-line-2">I came for Bocconi.</p>
+      <p id="story-line-3">Fashion Week found me later.</p>
+      <p id="story-byline">Marusya Semizarova · Bocconi University · Milan Fashion Week</p>
+    </div>
+    <div id="story-right">
+      <div id="portrait-wrap">
+        <img id="portrait-img" src="photos/marusya-portrait.jpg" alt="Marusya Semizarova" />
+        <div id="portrait-photo-overlay"></div>
+        <svg id="portrait-svg-figure" viewBox="0 0 100 133" fill="none" xmlns="http://www.w3.org/2000/svg"
+             preserveAspectRatio="xMidYMid meet">
+          <g stroke="#C9A84C" stroke-linecap="round" fill="none">
+            <!-- Left neck/collarbone diagonal — jaw down toward left shoulder -->
+            <line id="pf-cheek-l" x1="34" y1="88" x2="18" y2="112" stroke-width="0.6" opacity="0.4"/>
+            <!-- Right neck/collarbone diagonal (mirror) -->
+            <line id="pf-cheek-r" x1="66" y1="88" x2="82" y2="112" stroke-width="0.6" opacity="0.4"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE MFW — MILAN FASHION WEEK -->
+  <section id="scene-mfw" class="scene">
+    <div class="scene-rule" id="rule-mfw"></div>
+    <span class="fc-item" style="top:8%;left:5%;--fc-dur:9s;--fc-del:0s;opacity:.09">MFW</span>
+    <span class="fc-item" style="top:80%;right:6%;--fc-dur:11s;--fc-del:1.4s;opacity:.08">UFW</span>
+    <span class="fc-item" style="top:40%;left:3%;--fc-dur:10s;--fc-del:2.2s;opacity:.07">SS25</span>
+    <div id="mfw-overlay"></div>
+    <div id="mfw-content">
+      <p id="mfw-eyebrow">Milan Fashion Week</p>
+      <p id="mfw-quote">"The front row taught me more about this city than any guidebook ever could."</p>
+      <div id="mfw-badges">
+        <span class="mfw-badge">Bocconi University</span>
+        <span class="mfw-badge">Ukrainian FW</span>
+        <span class="mfw-badge">3 Seasons</span>
+      </div>
+    </div>
+    <div id="mfw-frame">
+      <img src="photos/marusya-runway.jpg" alt="Marusya at Ukrainian Fashion Week" />
+      <p class="mfw-frame-caption">Marusya Semizarova · Ukrainian Fashion Week</p>
+    </div>
+  </section>
+
+  <!-- SECTION NUMBERS -->
+  <section id="section-numbers" class="scene">
+    <div class="scene-rule" id="rule-numbers"></div>
+    <div id="num-grid">
+      <div class="num-item" id="ni-0">
+        <span class="num-val" id="nv-0" data-target="6">0</span>
+        <span class="num-label">Neighbourhoods</span>
+      </div>
+      <div class="num-item" id="ni-1">
+        <span class="num-val" id="nv-1" data-target="45">0</span>
+        <span class="num-label">Insider Locations</span>
+      </div>
+      <div class="num-item" id="ni-2">
+        <span class="num-val" id="nv-2" data-target="3">0</span>
+        <span class="num-label">Years in Milan</span>
+      </div>
+      <div class="num-item" id="ni-3">
+        <span class="num-val" id="nv-3" data-target="0">0</span>
+        <span class="num-label">Tourist Traps</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 4 — DUOMO ZOOM + 3 LOCATION CARDS (sequential) -->
+  <section id="scene-cards" class="scene">
+    <div class="scene-rule" id="rule-4"></div>
+    <!-- Floating coordinates -->
+    <span class="fc-item" style="top:10%;left:5%;--fc-dur:9s;--fc-del:0s;opacity:.09">NAV</span>
+    <span class="fc-item" style="top:80%;left:8%;--fc-dur:11s;--fc-del:1.6s;opacity:.07">BRE</span>
+    <span class="fc-item" style="top:40%;left:4%;--fc-dur:10s;--fc-del:2.8s;opacity:.08">QDR</span>
+    <span class="fc-item" style="top:22%;left:30%;--fc-dur:8s;--fc-del:0.5s;opacity:.06">45.44°</span>
+    <span class="fc-item" style="top:68%;left:25%;--fc-dur:12s;--fc-del:3.5s;opacity:.07">9.18°</span>
+
+    <p id="cards-zoom-hint">approaching 45.4641° N</p>
+
+    <!-- Navigli card -->
+    <div class="loc-card" id="card-nav">
+      <p class="lc-coord">45.4408° N · 9.1815° E</p>
+      <h2 class="lc-name">Navigli</h2>
+      <div class="lc-rule"></div>
+      <p class="lc-desc">Where the city exhales after dark. The aperitivo ritual, canal-side. Locals only know which bar.</p>
+      <p class="lc-type">Bars · Restaurants · Late Night</p>
+      <p class="lc-count">→ 8 locations in the guide</p>
+    </div>
+
+    <!-- Brera card -->
+    <div class="loc-card" id="card-brera">
+      <p class="lc-coord">45.4719° N · 9.1861° E</p>
+      <h2 class="lc-name">Brera</h2>
+      <div class="lc-rule"></div>
+      <p class="lc-desc">Artists left decades ago. The aesthetic stayed forever. Best espresso of your life is down a street with no sign.</p>
+      <p class="lc-type">Cafés · Galleries · Concept Stores</p>
+      <p class="lc-count">→ 7 locations in the guide</p>
+    </div>
+
+    <!-- Quadrilatero card -->
+    <div class="loc-card" id="card-quad">
+      <p class="lc-coord">45.4654° N · 9.2005° E</p>
+      <h2 class="lc-name">Quadrilatero</h2>
+      <div class="lc-rule"></div>
+      <p class="lc-desc">You know the brands. You don't know the doors. The real appointments happen elsewhere.</p>
+      <p class="lc-type">Luxury · Showrooms · Insider Access</p>
+      <p class="lc-count">→ 9 locations in the guide</p>
+    </div>
+  </section>
+
+  <!-- SECTION INSIDE — WHAT'S IN THE GUIDE -->
+  <section id="section-inside" class="scene">
+    <div class="scene-rule" id="rule-inside"></div>
+    <div id="ins-left">
+      <div id="ins-card-basso">
+        <p class="ins-coord">45.4647° N · 9.1789° E</p>
+        <div class="ins-divider"></div>
+        <h3 class="ins-name">Bar Basso</h3>
+        <p class="ins-addr">Via Plinio, 39 · Porta Venezia · Milano</p>
+        <blockquote class="ins-quote">"The Negroni Sbagliato was invented here. That's not lore. That's Tuesday."</blockquote>
+        <div class="ins-meta">
+          <span>Aperitivo · Late Night · Bar</span>
+          <span>Est. 1947 · Still legendary</span>
+        </div>
+      </div>
+    </div>
+    <div id="ins-right">
+      <div id="ins-more-overlay">
+        <p id="ins-more-text">44 more locations inside</p>
+        <button id="ins-cta-btn">UNLOCK THE INSIDER EDIT →</button>
+      </div>
+      <div class="ins-blur-row">
+        <div class="blur-card"><p class="bc-name">Ratanà</p><p class="bc-type">Milanese Cuisine</p></div>
+        <div class="blur-card"><p class="bc-name">Rossana Orlandi</p><p class="bc-type">Concept Store</p></div>
+        <div class="blur-card"><p class="bc-name">Pasticceria Marchesi</p><p class="bc-type">Historic Pastry</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 5 — NEIGHBORHOODS -->
+  <section id="scene-neighborhoods" class="scene">
+    <div class="scene-rule" id="rule-5"></div>
+    <!-- Floating coordinates -->
+    <span class="fc-item" style="top:8%;left:5%;--fc-dur:9s;--fc-del:0s;opacity:.08">45.48°</span>
+    <span class="fc-item" style="top:88%;right:6%;--fc-dur:11s;--fc-del:1.2s;opacity:.07">9.19°</span>
+    <span class="fc-item" style="top:55%;left:3%;--fc-dur:10s;--fc-del:2.4s;opacity:.06">MI-06</span>
+    <span class="fc-item" style="top:15%;right:4%;--fc-dur:8s;--fc-del:0.7s;opacity:.08">MXP</span>
+
+    <div id="nb-header">
+      <p id="nb-header-1">Six Neighbourhoods.</p>
+      <p id="nb-header-2">Zero tourist traps.</p>
+      <p id="nb-header-sub">Every location personally verified.<br>Updated seasonally. No sponsored listings.</p>
+    </div>
+    <div id="nb-grid">
+      <div class="nb-card" id="nb-nav">
+        <div class="nb-icon" id="icon-nav"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14,10 L34,10 L28,26 L26,33 L22,33 Z" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="24" y1="33" x2="24" y2="40" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+          <line x1="16" y1="40" x2="32" y2="40" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+          <circle cx="21" cy="19" r="1.8" stroke="#C9A84C" stroke-width="0.7"/>
+          <circle cx="27" cy="15" r="1.2" stroke="#C9A84C" stroke-width="0.7"/>
+        </svg></div>
+        <p class="nb-coord">45.4408° N · 9.1815° E</p>
+        <h3 class="nb-name">Navigli</h3>
+        <div class="nb-rule"></div>
+        <p class="nb-desc">Bohemian Waterways</p>
+        <div class="nb-tags"><span class="nb-tag">Aperitivo</span><span class="nb-tag">Nightlife</span></div>
+        <div class="easter-egg" style="position:absolute;bottom:1rem;right:1rem;animation-delay:1s;">
+          <svg viewBox="0 0 22 22"><line x1="5" y1="18" x2="5" y2="6"/><line x1="11" y1="18" x2="11" y2="4"/><line x1="17" y1="18" x2="17" y2="8"/><line x1="3" y1="18" x2="19" y2="18"/></svg>
+          <div class="egg-tooltip">Colonne di San Lorenzo — Roman columns from the 4th century. Every evening, locals gather here with wine from the nearby shop. No menu. No reservation. Just Milan.</div>
+        </div>
+      </div>
+      <div class="nb-card" id="nb-brera">
+        <div class="nb-icon" id="icon-brera"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12,18 L36,18 Q34,30 24,30 Q14,30 12,18 Z" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M36,20 Q44,22 42,27 Q40,31 36,29" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+          <line x1="10" y1="34" x2="38" y2="34" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+        </svg></div>
+        <p class="nb-coord">45.4719° N · 9.1861° E</p>
+        <h3 class="nb-name">Brera</h3>
+        <div class="nb-rule"></div>
+        <p class="nb-desc">Art District Soul</p>
+        <div class="nb-tags"><span class="nb-tag">Coffee</span><span class="nb-tag">Culture</span></div>
+      </div>
+      <div class="nb-card" id="nb-quad">
+        <div class="nb-icon" id="icon-quad"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24,6 Q30,7 30,13 Q30,17 24,19" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+          <line x1="24" y1="13" x2="24" y2="19" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+          <line x1="8" y1="19" x2="40" y2="19" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+          <path d="M8,19 L13,42 L35,42 L40,19" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg></div>
+        <p class="nb-coord">45.4654° N · 9.2005° E</p>
+        <h3 class="nb-name">Quadrilatero</h3>
+        <div class="nb-rule"></div>
+        <p class="nb-desc">Fashion Fortress</p>
+        <div class="nb-tags"><span class="nb-tag">Luxury</span><span class="nb-tag">Showrooms</span></div>
+        <div class="easter-egg" style="position:absolute;bottom:1rem;right:1rem;animation-delay:1.5s;">
+          <svg viewBox="0 0 22 22"><circle cx="11" cy="8" r="5"/><path d="M8,12 L7,20 L15,20 L14,12 Z"/></svg>
+          <div class="egg-tooltip">The best showrooms in Quadrilatero have no signs. No visible handles. You ring a bell. They decide if you enter. The guide tells you which bell to ring.</div>
+        </div>
+      </div>
+      <div class="nb-card" id="nb-isola">
+        <div class="nb-icon" id="icon-isola"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24,42 Q9,33 10,19 Q15,8 24,8 Q33,8 38,19 Q39,33 24,42 Z" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+          <line x1="24" y1="8" x2="24" y2="42" stroke="#C9A84C" stroke-width="0.65" stroke-linecap="round"/>
+          <path d="M24,28 Q32,23 36,17" stroke="#C9A84C" stroke-width="0.5" stroke-linecap="round" opacity="0.6"/>
+          <path d="M24,34 Q16,29 13,23" stroke="#C9A84C" stroke-width="0.5" stroke-linecap="round" opacity="0.6"/>
+        </svg></div>
+        <p class="nb-coord">45.4833° N · 9.1875° E</p>
+        <h3 class="nb-name">Isola</h3>
+        <div class="nb-rule"></div>
+        <p class="nb-desc">New Wave Milan</p>
+        <div class="nb-tags"><span class="nb-tag">Coffee</span><span class="nb-tag">Design</span></div>
+        <div class="easter-egg" style="position:absolute;bottom:1rem;right:1rem;animation-delay:2s;">
+          <svg viewBox="0 0 22 22"><path d="M9,3 Q11,2 13,4 L12,18 Q11,20 10,18 Z"/><ellipse cx="11" cy="5" rx="2" ry="1.5"/><path d="M13,5 Q17,4 17,8 Q17,12 13,10"/></svg>
+          <div class="egg-tooltip">Via Tortona to Isola — this corridor is where Armani opened his first atelier. Where Versace sketched his early work. The fashion industry was literally born on these streets.</div>
+        </div>
+      </div>
+      <div class="nb-card" id="nb-pr">
+        <div class="nb-icon" id="icon-pr"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="30" r="13" stroke="#C9A84C" stroke-width="0.8"/>
+          <circle cx="24" cy="30" r="8" stroke="#C9A84C" stroke-width="0.5" opacity="0.5"/>
+          <line x1="14" y1="7" x2="14" y2="17" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+          <line x1="12" y1="7" x2="12" y2="14" stroke="#C9A84C" stroke-width="0.65" stroke-linecap="round"/>
+          <line x1="16" y1="7" x2="16" y2="14" stroke="#C9A84C" stroke-width="0.65" stroke-linecap="round"/>
+          <path d="M12,14 Q14,17 16,14" stroke="#C9A84C" stroke-width="0.65" fill="none" stroke-linecap="round"/>
+          <line x1="34" y1="7" x2="34" y2="17" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round"/>
+          <path d="M34,7 Q38,11 36,16 L34,16" stroke="#C9A84C" stroke-width="0.65" fill="none" stroke-linecap="round"/>
+        </svg></div>
+        <p class="nb-coord">45.4540° N · 9.1951° E</p>
+        <h3 class="nb-name">Porta Romana</h3>
+        <div class="nb-rule"></div>
+        <p class="nb-desc">Local Milan</p>
+        <div class="nb-tags"><span class="nb-tag">Aperitivo</span><span class="nb-tag">Daily Life</span></div>
+      </div>
+      <div class="nb-card" id="nb-cs">
+        <div class="nb-icon" id="icon-cs"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24,38 L7,32 L7,13 Q24,11 24,17 Z" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M24,38 L41,32 L41,13 Q24,11 24,17 Z" stroke="#C9A84C" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="24" y1="17" x2="24" y2="38" stroke="#C9A84C" stroke-width="0.65" stroke-linecap="round"/>
+        </svg></div>
+        <p class="nb-coord">45.4748° N · 9.2281° E</p>
+        <h3 class="nb-name">Città Studi</h3>
+        <div class="nb-rule"></div>
+        <p class="nb-desc">Intellectual Corner</p>
+        <div class="nb-tags"><span class="nb-tag">Cafés</span><span class="nb-tag">Bocconi Zone</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 6 — CTA -->
+  <span id="guide" style="position:absolute;"></span>
+  <section id="scene-cta" class="scene">
+    <div class="scene-rule" id="rule-6"></div>
+    <!-- Floating coordinates -->
+    <span class="fc-item" style="top:12%;left:6%;--fc-dur:10s;--fc-del:0s;opacity:.08">45.46°N</span>
+    <span class="fc-item" style="top:82%;right:7%;--fc-dur:9s;--fc-del:1.5s;opacity:.07">9.19°E</span>
+    <span class="fc-item" style="top:30%;right:5%;--fc-dur:12s;--fc-del:2.2s;opacity:.06">MXP</span>
+    <span class="fc-item" style="top:72%;left:5%;--fc-dur:8s;--fc-del:0.9s;opacity:.08">MI-01</span>
+
+    <div class="easter-egg" style="left:8%;top:50%;animation-delay:0.8s;">
+      <svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="9"/><line x1="11" y1="11" x2="6.5" y2="15.5"/><line x1="11" y1="11" x2="11" y2="5"/><circle cx="11" cy="11" r="1" fill="#C9A84C" stroke="none"/></svg>
+      <div class="egg-tooltip">Milanese dinner rule: never before 8:30pm. Arrive at 7pm — you are a tourist. Arrive at 9pm — you belong here. The best tables fill up after 9.</div>
+    </div>
+    <p id="cta-eyebrow">The Insider Guide</p>
+    <h1 id="cta-title">Milan, Decoded.</h1>
+    <div id="cta-rule"></div>
+    <p id="cta-features">
+      45 locations · 6 neighborhoods · 1 perspective<br>
+      Cafés · Restaurants · Concept stores · Hidden courtyards<br>
+      Aperitivo bars · Late-night spots · Industry secrets
+    </p>
+    <p id="cta-price">€29</p>
+    <div id="countdown">
+      <p id="cd-label">LAUNCH PRICE ENDS IN</p>
+      <div id="cd-boxes">
+        <div class="cd-box"><span class="cd-num" id="cd-hr">00</span><span class="cd-unit">HR</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cd-min">00</span><span class="cd-unit">MIN</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cd-sec">00</span><span class="cd-unit">SEC</span></div>
+      </div>
+      <p id="cd-expired" style="display:none">Price updated to €49</p>
+    </div>
+    <button id="cta-btn"><span>UNLOCK THE INSIDER EDIT →</span></button>
+    <p id="social-proof">Delivered instantly · Worldwide access</p>
+    <p id="cta-fine">Instant PDF delivery · Available worldwide</p>
+  </section>
+
+  <footer id="footer" style="position:relative;">
+    <span class="f-logo">M·D</span>
+    <span class="f-copy">© 2026 Marusya Semizarova</span>
+    <div class="easter-egg" style="right:10%;top:50%;transform:translateY(-50%);animation-delay:1.2s;">
+      <svg viewBox="0 0 22 22"><path d="M15,3 Q19,7 19,11 Q19,16 15,19 Q8,17 8,11 Q8,5 15,3 Z"/><path d="M15,5 Q11,7 11,11 Q11,15 15,17" stroke="rgba(13,10,8,0.97)" stroke-width="3"/><path d="M15,5 Q11,7 11,11 Q11,15 15,17"/></svg>
+      <div class="egg-tooltip">Navigli never sleeps — not even Monday. Locals call it 'la città nella città' — the city within the city. The rest of Milan goes to bed. Navigli doesn't.</div>
+    </div>
+    <a href="#" class="f-ig" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="5"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+  </footer>
+
+</div><!-- /#main -->
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.fonts.ready.then(() => {
+
+  const SCRUB = 1.5;
+
+  /* ──────────────────────────────
+     LENIS SMOOTH SCROLL
+  ────────────────────────────── */
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true, smoothTouch: false,
+  });
+  gsap.ticker.add(time => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on('scroll', ScrollTrigger.update);
+  ScrollTrigger.scrollerProxy(document.body, {
+    scrollTop(v) {
+      if (arguments.length) lenis.scrollTo(v, { immediate: true });
+      return lenis.scroll;
+    },
+    getBoundingClientRect() {
+      return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+    },
+    pinType: document.body.style.transform ? 'transform' : 'fixed',
+  });
+  ScrollTrigger.addEventListener('refresh', () => lenis.resize());
+
+  /* ──────────────────────────────
+     GRAIN ANIMATION
+  ────────────────────────────── */
+  const grainEl = document.getElementById('grain');
+  (function animGrain() {
+    grainEl.style.transform =
+      `translate(${(Math.random()*20-10).toFixed(1)}px,${(Math.random()*20-10).toFixed(1)}px)`;
+    setTimeout(animGrain, 150);
+  })();
+
+  /* ──────────────────────────────
+     HAMBURGER / NAV
+  ────────────────────────────── */
+  const burger = document.getElementById('hamburger');
+  const navOvr = document.getElementById('nav-overlay');
+  const navBdp = document.getElementById('nav-backdrop');
+  function openNav()  {
+    navOvr.classList.add('open'); navBdp.classList.add('open');
+    burger.classList.add('open'); burger.setAttribute('aria-expanded','true'); lenis.stop();
+  }
+  function closeNav() {
+    navOvr.classList.remove('open'); navBdp.classList.remove('open');
+    burger.classList.remove('open'); burger.setAttribute('aria-expanded','false'); lenis.start();
+  }
+  burger.addEventListener('click', () => navOvr.classList.contains('open') ? closeNav() : openNav());
+  navBdp.addEventListener('click', closeNav);
+  document.querySelectorAll('.nl').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (href.startsWith('#')) { e.preventDefault(); closeNav(); const t = document.querySelector(href); if (t) lenis.scrollTo(t, { duration: 1.6 }); }
+      else closeNav();
+    });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && navOvr.classList.contains('open')) closeNav(); });
+
+  /* ──────────────────────────────
+     SVG STROKE INIT
+     Set dasharray = totalLength, dashoffset = totalLength (invisible)
+  ────────────────────────────── */
+  function initDuomoSVG() {
+    document.querySelectorAll('#duomo-svg line, #duomo-svg path, #duomo-svg circle').forEach(el => {
+      try {
+        const len = el.getTotalLength ? Math.ceil(el.getTotalLength()) + 2 : 600;
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      } catch(e) {
+        gsap.set(el, { strokeDasharray: 600, strokeDashoffset: 600 });
+      }
+    });
+    document.querySelectorAll('#portrait-svg-figure line, #portrait-svg-figure path, #portrait-svg-figure ellipse').forEach(el => {
+      try {
+        const len = Math.ceil(el.getTotalLength ? el.getTotalLength() : 200) + 2;
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      } catch(e) {
+        gsap.set(el, { strokeDasharray: 400, strokeDashoffset: 400 });
+      }
+    });
+    document.querySelectorAll('.nb-icon svg path, .nb-icon svg line, .nb-icon svg circle, .nb-icon svg ellipse').forEach(el => {
+      try {
+        const len = Math.ceil(el.getTotalLength ? el.getTotalLength() : 120) + 2;
+        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      } catch(e) {
+        gsap.set(el, { strokeDasharray: 200, strokeDashoffset: 200 });
+      }
+    });
+  }
+
+  /* ──────────────────────────────
+     PRELOADER
+  ────────────────────────────── */
+  const SC_CHARS  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789°.\' ';
+  const PARIS_STR = '48.8566° N, 2.3522° E';
+  const MILAN_STR = '45.4642° N, 9.1900° E';
+  const coordsEl   = document.getElementById('preloader-coords');
+  const locatingEl = document.getElementById('preloader-locating');
+  const charSpans  = PARIS_STR.split('').map(ch => {
+    const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch;
+    coordsEl.appendChild(s); return s;
+  });
+  function scrambleToMilan() {
+    MILAN_STR.split('').forEach((target, i) => {
+      const span = charSpans[i]; if (!span) return;
+      if (' ,'.includes(target)) { span.textContent = target; return; }
+      let n = 0;
+      const iv = setInterval(() => {
+        if (n < 8) { span.textContent = SC_CHARS[Math.floor(Math.random() * SC_CHARS.length)]; n++; }
+        else { span.textContent = target; clearInterval(iv); }
+      }, 52);
+    });
+  }
+  setTimeout(() => {
+    scrambleToMilan();
+    setTimeout(() => { locatingEl.style.opacity = '1'; }, 550);
+    setTimeout(() => {
+      const pre = document.getElementById('preloader');
+      pre.style.transition = 'opacity .75s ease';
+      pre.style.opacity = '0';
+      setTimeout(() => {
+        pre.style.display = 'none';
+        const mainEl = document.getElementById('main');
+        mainEl.style.visibility = 'visible';
+        gsap.to(mainEl, { opacity: 1, duration: 0.5, ease: 'power2.out', onComplete: heroEntrance });
+      }, 750);
+    }, 1700);
+  }, 800);
+
+  /* ──────────────────────────────
+     HERO ENTRANCE (one-time)
+  ────────────────────────────── */
+  function heroEntrance() {
+    initDuomoSVG();
+
+    gsap.set('#hl-m', { x: -100, opacity: 0 });
+    gsap.set('#hl-n', { x:  100, opacity: 0 });
+    gsap.set('#hl-i', { y:  -80, opacity: 0 });
+    gsap.set('#hl-l', { y:   80, opacity: 0 });
+    gsap.set('#hl-a', { y:  -60, opacity: 0 });
+    gsap.set('#hd-1,#hd-2,#hd-3,#hd-4', { opacity: 0 });
+    gsap.set('#it-T', { opacity: 0 });
+    gsap.set('#hero-decoded', { opacity: 0 });
+    gsap.set('#hero-vp',      { opacity: 0 });
+    gsap.set('#hero-hint',    { opacity: 0 });
+
+    const tl = gsap.timeline();
+    tl.to('#hl-m', { x: 0, opacity: 1, duration: .95, ease: 'power3.out' }, 0)
+      .to('#hl-n', { x: 0, opacity: 1, duration: .95, ease: 'power3.out' }, .06)
+      .to('#hl-i', { y: 0, opacity: 1, duration: .88, ease: 'power3.out' }, .12)
+      .to('#hl-l', { y: 0, opacity: 1, duration: .88, ease: 'power3.out' }, .18)
+      .to('#hl-a', { y: 0, opacity: 1, duration: .88, ease: 'power3.out' }, .24)
+      .to('#hd-1,#hd-2,#hd-3,#hd-4', { opacity: 1, stagger: .06, duration: .4 }, .35);
+
+    tl.add(() => {
+      gsap.set('#hero-decoded', { opacity: 1 });
+      const inner = document.getElementById('decoded-inner');
+      const cursor = document.getElementById('decoded-cursor');
+      const WORD = 'DECODED'; let idx = 0;
+      const iv = setInterval(() => {
+        inner.textContent += WORD[idx++];
+        if (idx >= WORD.length) {
+          clearInterval(iv);
+          setTimeout(() => { cursor.style.animation = 'none'; cursor.style.opacity = '0'; }, 1100);
+        }
+      }, 82);
+    }, .85);
+
+    tl.to('#hero-vp',   { opacity: 1, duration: .8, ease: 'power2.out' }, 1.5);
+    tl.to('#hero-hint', { opacity: .5, duration: .7 }, 2.0);
+
+    tl.add(initScrollAnimations, 1.2);
+  }
+
+  /* ──────────────────────────────
+     SCROLL ANIMATIONS
+  ────────────────────────────── */
+  function initScrollAnimations() {
+
+    /* ── SCENE RULE LINES ── */
+    ['#rule-2','#rule-pain','#rule-3','#rule-mfw','#rule-numbers','#rule-4','#rule-inside','#rule-5','#rule-6'].forEach((id, i) => {
+      const scenes = ['#scene-duomo','#scene-pain','#scene-story','#scene-mfw','#section-numbers','#scene-cards','#section-inside','#scene-neighborhoods','#scene-cta'];
+      gsap.fromTo(id, { scaleX: 0 }, {
+        scaleX: 1, duration: .6, ease: 'power2.out',
+        scrollTrigger: { trigger: scenes[i], start: 'top 98%', end: 'top 85%', scrub: SCRUB },
+      });
+    });
+
+    /* ════════════════════════════
+       S1 — HERO PIN + LETTERS SPLIT
+       100vh scroll
+    ════════════════════════════ */
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: '#hero', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=100vh', scrub: SCRUB,
+      }
+    })
+    .to('#hero-hint',    { opacity: 0, duration: .05 }, 0)
+    .to('#hero-vp', { opacity: 0, y: -18, duration: .3 }, 0)
+    .to('#hero-decoded', { opacity: 0, y: -24, duration: .3 }, .03)
+    .to('#hl-m',  { x: '-125vw', opacity: 0, ease: 'power2.in', duration: .7 }, .08)
+    .to('#hd-1',  { x:  '-85vw', opacity: 0, ease: 'power2.in', duration: .6 }, .08)
+    .to('#hl-n',  { x:  '125vw', opacity: 0, ease: 'power2.in', duration: .7 }, .08)
+    .to('#hd-4',  { x:   '85vw', opacity: 0, ease: 'power2.in', duration: .6 }, .08)
+    .to('#hl-i',  { y: '-105vh', opacity: 0, ease: 'power2.in', duration: .7 }, .10)
+    .to('#hd-2',  { y:  '-85vh', opacity: 0, ease: 'power2.in', duration: .6 }, .12)
+    .to('#hl-l',  { y: '-105vh', ease: 'power2.in', duration: .7 }, .14)
+    .to('#hd-3',  { y:  '-85vh', opacity: 0, ease: 'power2.in', duration: .6 }, .16)
+    .to('#hl-a',  { y: '-105vh', opacity: 0, ease: 'power2.in', duration: .7 }, .18)
+    /* L → T morph mid-flight */
+    .to('#hl-l-text', { opacity: 0, duration: .06 }, .38)
+    .to('#it-T',      { opacity: 1, duration: .06 }, .38)
+    .to('#hl-l',      { opacity: 0, duration: .12 }, .52)
+    /* SVG hint at top-right as letters scatter */
+    .to('#duomo-svg-wrap', { opacity: .12, duration: .45 }, .55);
+
+    /* ════════════════════════════
+       S2 — DUOMO SVG DRAWS IN
+       100vh scroll
+    ════════════════════════════ */
+    gsap.set('#duomo-label', { opacity: 0, y: 16 });
+
+    const s2 = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#scene-duomo', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=100vh', scrub: SCRUB,
+      }
+    });
+
+    /* SVG appears as scene pins */
+    s2.to('#duomo-svg-wrap', { opacity: 1, duration: .12, ease: 'none' }, 0);
+
+    /* G1 — base horizontal line */
+    s2.to('#d-g1 line', { strokeDashoffset: 0, duration: .06, ease: 'none' }, .02);
+
+    /* G2 — five portal arches, left → right */
+    s2.to('#d-g2 path, #d-g2 line', { strokeDashoffset: 0, stagger: .014, duration: .14, ease: 'none' }, .07);
+
+    /* G3 — main walls, cornices, belt courses */
+    s2.to('#d-g3 line', { strokeDashoffset: 0, stagger: .018, duration: .12, ease: 'none' }, .20);
+
+    /* G4 — buttresses, arcading, tympanum circles */
+    s2.to('#d-g4 line, #d-g4 path, #d-g4 circle', { strokeDashoffset: 0, stagger: .016, duration: .10, ease: 'none' }, .31);
+
+    /* G5 — central mass, gable, rose window */
+    s2.to('#d-g5 line, #d-g5 path, #d-g5 circle', { strokeDashoffset: 0, stagger: .018, duration: .12, ease: 'none' }, .40);
+
+    /* G6 — roofline pinnacles, left → right */
+    s2.to('#d-g6 path', { strokeDashoffset: 0, stagger: .009, duration: .10, ease: 'none' }, .51);
+
+    /* G7 — secondary spires ascending */
+    s2.to('#d-g7 line, #d-g7 path', { strokeDashoffset: 0, stagger: .008, duration: .13, ease: 'none' }, .59);
+
+    /* G8 — central tallest spire */
+    s2.to('#d-g8 line, #d-g8 path', { strokeDashoffset: 0, stagger: .022, duration: .09, ease: 'none' }, .78);
+
+    /* G9 — Madonnina star at apex */
+    s2.to('#madonnina circle, #madonnina line', { strokeDashoffset: 0, stagger: .028, duration: .07, ease: 'none' }, .89);
+
+    /* Label fades in near end */
+    s2.fromTo('#duomo-label', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .18 }, .84);
+
+    /* Transition to watermark at end of scene */
+    s2.to('#duomo-svg-wrap', { opacity: .08, duration: .22 }, .90);
+
+    /* ════════════════════════════
+       PAIN POINT — sequential reveal
+       100vh scroll
+    ════════════════════════════ */
+    gsap.set(['#pain-label','#pain-main','#pain-sub','#pain-closer'], { opacity: 0, y: 20 });
+    gsap.set('#pain-rule', { opacity: 0 });
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: '#scene-pain', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=100vh', scrub: SCRUB,
+      }
+    })
+    .fromTo('#pain-label',  { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .18 }, 0)
+    .fromTo('#pain-main',   { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .28 }, .16)
+    .fromTo('#pain-sub',    { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .28 }, .38)
+    .fromTo('#pain-rule',   { opacity: 0 },         { opacity: 1,       duration: .16 }, .60)
+    .fromTo('#pain-closer', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .26 }, .70);
+
+    /* ════════════════════════════
+       S3 — STORY
+       100vh scroll
+    ════════════════════════════ */
+    gsap.set('#portrait-wrap', { clipPath: 'inset(100% 0 0 0)' });
+    gsap.set(['#story-label','#story-pre'], { opacity: 0 });
+    gsap.set(['#story-line-1','#story-line-2','#story-line-3'], { opacity: 0, x: -55 });
+    gsap.set('#story-byline', { opacity: 0 });
+    gsap.set('#portrait-svg-figure', { opacity: 0 });
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: '#scene-story', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=100vh', scrub: SCRUB,
+      }
+    })
+    .fromTo('#portrait-wrap', { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: .8 }, 0)
+    .to('#portrait-svg-figure', { opacity: 0.5, duration: .35, ease: 'none' }, .12)
+    .to('#portrait-svg-figure line, #portrait-svg-figure path, #portrait-svg-figure ellipse', { strokeDashoffset: 0, stagger: .01, duration: .55, ease: 'none' }, .10)
+    .fromTo('#story-label',  { opacity: 0 }, { opacity: 1,   duration: .18 }, 0)
+    .fromTo('#story-pre',    { opacity: 0 }, { opacity: .6,  duration: .2  }, .10)
+    .fromTo('#story-line-1', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .18)
+    .fromTo('#story-line-2', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .42)
+    .fromTo('#story-line-3', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .66)
+    .fromTo('#story-byline', { opacity: 0 },          { opacity: .55,     duration: .22 }, .88);
+
+    /* ════════════════════════════
+       S4 — DUOMO ZOOM + CARDS (SEQUENTIAL)
+       200vh scroll — 3 cards at 33%/33%/34%
+    ════════════════════════════ */
+    /* Initial states for cards (x offset, opacity 0 handled by CSS) */
+    gsap.set('#card-nav',   { xPercent: 60, opacity: 0 });
+    gsap.set('#card-brera', { xPercent: 60, opacity: 0 });
+    gsap.set('#card-quad',  { xPercent: 60, opacity: 0 });
+    gsap.set('#cards-zoom-hint', { opacity: 0 });
+
+    const s4 = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#scene-cards', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=200vh', scrub: SCRUB,
+      }
+    });
+
+    /* 0-0.20: zoom SVG up as backdrop */
+    s4.to('#duomo-svg-wrap', { scale: 1.45, opacity: .22, ease: 'none', duration: .2 }, 0);
+    s4.fromTo('#cards-zoom-hint', { opacity: 0 }, { opacity: 1, duration: .1 }, .05);
+    s4.to('#cards-zoom-hint', { opacity: 0, duration: .08 }, .18);
+
+    /* 0.20-0.40: Navigli slides in */
+    s4.to('#card-nav', { xPercent: 0, opacity: 1, ease: 'power2.out', duration: .14 }, .22);
+    /* 0.40-0.44: Navigli slides out, Brera starts */
+    s4.to('#card-nav', { xPercent: -60, opacity: 0, ease: 'power2.in', duration: .1 }, .56);
+
+    /* 0.44-0.66: Brera slides in */
+    s4.to('#card-brera', { xPercent: 0, opacity: 1, ease: 'power2.out', duration: .14 }, .58);
+    /* 0.66-0.70: Brera out */
+    s4.to('#card-brera', { xPercent: -60, opacity: 0, ease: 'power2.in', duration: .1 }, .88);
+
+    /* 0.70-1.0: Quadrilatero slides in and stays */
+    s4.to('#card-quad', { xPercent: 0, opacity: 1, ease: 'power2.out', duration: .14 }, .90);
+
+    /* SVG gently zooms back as cards settle */
+    s4.to('#duomo-svg-wrap', { scale: 1.2, opacity: .12, ease: 'none', duration: .4 }, .60);
+
+    /* ════════════════════════════
+       S5 — NEIGHBORHOODS FLY IN
+       100vh scroll
+    ════════════════════════════ */
+    gsap.set('#nb-header', { opacity: 0, y: 28 });
+    gsap.set('#nb-nav',   { opacity: 0, x: -70, y:  65 });
+    gsap.set('#nb-brera', { opacity: 0, x:   0, y: -70 });
+    gsap.set('#nb-quad',  { opacity: 0, x:  70, y:   0 });
+    gsap.set('#nb-isola', { opacity: 0, x: -70, y: -70 });
+    gsap.set('#nb-pr',    { opacity: 0, x:   0, y:  70 });
+    gsap.set('#nb-cs',    { opacity: 0, x:  70, y:  70 });
+
+    /* Reset SVG scale before neighborhoods */
+    gsap.to('#duomo-svg-wrap', {
+      scale: 1, opacity: .08, ease: 'none',
+      scrollTrigger: { trigger: '#scene-neighborhoods', start: 'top 80%', end: 'top top', scrub: SCRUB },
+    });
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: '#scene-neighborhoods', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=100vh', scrub: SCRUB,
+      }
+    })
+    .fromTo('#nb-header', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .3 }, 0)
+    .fromTo('#nb-nav',   { opacity: 0, x: -70, y:  65 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .12)
+    .fromTo('#nb-brera', { opacity: 0, x:   0, y: -70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .20)
+    .fromTo('#nb-quad',  { opacity: 0, x:  70, y:   0 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .26)
+    .fromTo('#nb-isola', { opacity: 0, x: -70, y: -70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .18)
+    .fromTo('#nb-pr',    { opacity: 0, x:   0, y:  70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .34)
+    .fromTo('#nb-cs',    { opacity: 0, x:  70, y:  70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .40);
+
+    /* ════════════════════════════
+       S6 — CTA
+       80vh scroll
+    ════════════════════════════ */
+    gsap.set(['#cta-eyebrow','#cta-title','#cta-features','#cta-price'], { opacity: 0, y: 28 });
+    gsap.set(['#cta-rule','#cta-btn','#cta-fine','#countdown','#social-proof'], { opacity: 0 });
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: '#scene-cta', pin: true, anticipatePin: 1,
+        start: 'top top', end: '+=80vh', scrub: SCRUB,
+      }
+    })
+    .fromTo('#cta-eyebrow',  { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .25 }, 0)
+    .fromTo('#cta-title',    { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .35 }, .12)
+    .fromTo('#cta-rule',     { opacity: 0 },        { opacity: 1,       duration: .22 }, .28)
+    .fromTo('#cta-features', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .25 }, .36)
+    .fromTo('#cta-price',    { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .22 }, .46)
+    .fromTo('#countdown',    { opacity: 0 },        { opacity: 1,       duration: .25 }, .55)
+    .fromTo('#cta-btn',      { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .22 }, .66)
+    .fromTo('#social-proof', { opacity: 0 },        { opacity: .8,      duration: .18 }, .76)
+    .fromTo('#cta-fine',     { opacity: 0 },        { opacity: .8,      duration: .18 }, .84);
+
+    /* ════════════════════════════
+       MFW — scroll reveal (no pin)
+    ════════════════════════════ */
+    gsap.set('#mfw-eyebrow', { opacity: 0, y: 18 });
+    gsap.set('#mfw-quote',   { opacity: 0, y: 26 });
+    gsap.set('#mfw-badges',  { opacity: 0 });
+    gsap.set('#mfw-frame',   { opacity: 0, x: 30 });
+
+    ScrollTrigger.create({ trigger: '#scene-mfw', start: 'top 72%', once: true, onEnter: () => {
+      gsap.to('#mfw-eyebrow', { opacity: 1, y: 0, duration: .55, ease: 'power2.out' });
+      gsap.to('#mfw-quote',   { opacity: 1, y: 0, duration: .7,  ease: 'power2.out', delay: .15 });
+      gsap.to('#mfw-badges',  { opacity: 1,        duration: .5,                      delay: .38 });
+      gsap.to('#mfw-frame',   { opacity: 1, x: 0,  duration: .75, ease: 'power2.out', delay: .28 });
+    }});
+
+    /* ════════════════════════════
+       NUMBERS — count-up on entry
+    ════════════════════════════ */
+    gsap.set('.num-item', { opacity: 0, y: 32 });
+
+    ScrollTrigger.create({ trigger: '#section-numbers', start: 'top 90%', once: true, onEnter: () => {
+      gsap.to('.num-item', { opacity: 1, y: 0, stagger: .18, duration: .6, ease: 'power2.out' });
+      document.querySelectorAll('.num-val').forEach((el, i) => {
+        const target = parseInt(el.dataset.target, 10);
+        if (target > 0) {
+          const obj = { val: 0 };
+          gsap.to(obj, { val: target, duration: 1.6, ease: 'power2.out', delay: i * .18,
+            onUpdate() { el.textContent = Math.round(obj.val); } });
+        }
+      });
+    }});
+
+    /* ════════════════════════════
+       INSIDE — reveal on scroll
+    ════════════════════════════ */
+    gsap.set('#ins-card-basso', { opacity: 0, x: -40 });
+    gsap.set('#ins-more-text',  { opacity: 0, y: 20 });
+    gsap.set('#ins-cta-btn',    { opacity: 0 });
+
+    ScrollTrigger.create({ trigger: '#section-inside', start: 'top 65%', once: true, onEnter: () => {
+      gsap.to('#ins-card-basso', { opacity: 1, x: 0, duration: .8, ease: 'power2.out' });
+      gsap.to('#ins-more-text',  { opacity: 1, y: 0, duration: .6, ease: 'power2.out', delay: .32 });
+      gsap.to('#ins-cta-btn',    { opacity: 1,        duration: .5,                     delay: .6  });
+    }});
+
+    /* ════════════════════════════
+       NEIGHBORHOOD ICONS — draw on entry
+    ════════════════════════════ */
+    ScrollTrigger.create({ trigger: '#scene-neighborhoods', start: 'top 65%', once: true, onEnter: () => {
+      gsap.to('.nb-icon', { opacity: 1, duration: .4, stagger: .1, ease: 'power2.out' });
+      document.querySelectorAll('.nb-icon svg path, .nb-icon svg line, .nb-icon svg circle, .nb-icon svg ellipse').forEach((el, i) => {
+        gsap.to(el, { strokeDashoffset: 0, duration: .9, ease: 'power2.out', delay: .2 + i * .04 });
+      });
+    }});
+
+    ScrollTrigger.refresh();
+  }
+
+  /* ── Countdown timer (localStorage 24 h) ── */
+  (function startCountdown() {
+    const KEY = 'milan_decoded_launch_end';
+    let end = parseInt(localStorage.getItem(KEY) || '0');
+    if (!end || Date.now() > end) { end = Date.now() + 86400000; localStorage.setItem(KEY, end); }
+    const hrEl  = document.getElementById('cd-hr');
+    const minEl = document.getElementById('cd-min');
+    const secEl = document.getElementById('cd-sec');
+    function tick() {
+      const r = end - Date.now();
+      if (r <= 0) {
+        document.getElementById('cd-boxes').style.display   = 'none';
+        document.getElementById('cd-expired').style.display = 'block';
+        document.getElementById('cd-label').textContent     = 'PRICE UPDATED';
+        return;
+      }
+      hrEl.textContent  = String(Math.floor(r / 3600000)).padStart(2,'0');
+      minEl.textContent = String(Math.floor((r % 3600000) / 60000)).padStart(2,'0');
+      secEl.textContent = String(Math.floor((r % 60000)   / 1000)).padStart(2,'0');
+      setTimeout(tick, 1000);
+    }
+    tick();
+  })();
+
+  /* ── CTA buttons ── */
+  document.getElementById('cta-btn').addEventListener('click', () => {
+    lenis.scrollTo('#guide', { duration: 1.4 });
+  });
+  document.getElementById('ins-cta-btn').addEventListener('click', () => {
+    lenis.scrollTo('#guide', { duration: 1.4 });
+  });
+
+  /* ── Logo scroll to top ── */
+  document.getElementById('logo').addEventListener('click', e => {
+    e.preventDefault(); lenis.scrollTo(0, { duration: 1.4 });
+  });
+
+  /* ── Refresh after images load ── */
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+
+  }); // fonts.ready
+});
+</script>
+</body>
+</html>
