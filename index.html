@@ -504,6 +504,28 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 }
 
 /* ═══════════════════════════════════════
+   SCENE 4 — CARDS HEADER
+═══════════════════════════════════════ */
+#cards-header {
+  position: absolute; top: 3rem; left: 50%; transform: translateX(-50%);
+  text-align: center; z-index: 4; width: 100%; pointer-events: none;
+  opacity: 0; will-change: opacity;
+}
+#cards-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .4em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: .8rem;
+}
+#cards-title {
+  font-family: 'Playfair Display', serif; font-weight: 400;
+  font-size: 2.5vw; color: var(--white); line-height: 1.2; margin-bottom: .5rem;
+}
+#cards-sub {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .9vw; color: var(--blush); opacity: .75;
+}
+
+/* ═══════════════════════════════════════
    SCENE 4 — DUOMO ZOOM + CARDS
 ═══════════════════════════════════════ */
 #scene-cards {
@@ -661,6 +683,21 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 .f-ig svg { width: 18px; height: 18px; }
 
 /* ═══════════════════════════════════════
+   SCROLL SNAP
+═══════════════════════════════════════ */
+html {
+  scroll-snap-type: y mandatory;
+}
+.scene, #section-numbers, #section-inside {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+/* GSAP pin-spacers also act as snap points */
+.pin-spacer {
+  scroll-snap-align: start;
+}
+
+/* ═══════════════════════════════════════
    MOBILE
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
@@ -809,6 +846,10 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   .easter-egg svg { width: 16px; height: 16px; }
   .egg-tooltip    { font-size: 10px; width: 180px; }
 
+  /* Scroll snap — proximity on mobile */
+  html { scroll-snap-type: y proximity; }
+  section { min-height: 100svh; }
+
   /* Misc */
   .fc-item { display: none; }
 }
@@ -831,6 +872,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 #it-T {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
+  opacity: 0;
 }
 
 /* ═══════════════════════════════════════
@@ -882,14 +924,14 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 }
 #pain-label {
   font-family: 'JetBrains Mono', monospace; font-weight: 300;
-  font-size: .75vw; letter-spacing: .4em; color: var(--gold);
+  font-size: .8vw; letter-spacing: .3em; color: var(--gold);
   text-transform: uppercase; margin-bottom: 2.5rem;
   opacity: 0; will-change: opacity, transform;
 }
 #pain-main {
   font-family: 'Playfair Display', serif; font-weight: 400;
-  font-size: 3vw; color: var(--white); line-height: 1.5;
-  margin-bottom: 2.5rem; max-width: 700px;
+  font-size: 4.5vw; color: var(--white); line-height: 1.4;
+  margin-bottom: 2.5rem; max-width: 800px;
   opacity: 0; will-change: opacity, transform;
 }
 #pain-sub {
@@ -1462,6 +1504,12 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
     <span class="fc-item" style="top:22%;left:30%;--fc-dur:8s;--fc-del:0.5s;opacity:.06">45.44°</span>
     <span class="fc-item" style="top:68%;left:25%;--fc-dur:12s;--fc-del:3.5s;opacity:.07">9.18°</span>
 
+    <div id="cards-header">
+      <p id="cards-eyebrow">A GLIMPSE INSIDE</p>
+      <p id="cards-title">Three locations. Revealed.</p>
+      <p id="cards-sub">The other 42 are waiting.</p>
+    </div>
+
     <p id="cards-zoom-hint">approaching 45.4641° N</p>
 
     <!-- Navigli card -->
@@ -1471,7 +1519,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <div class="lc-rule"></div>
       <p class="lc-desc">Where the city exhales after dark. The aperitivo ritual, canal-side. Locals only know which bar.</p>
       <p class="lc-type">Bars · Restaurants · Late Night</p>
-      <p class="lc-count">→ 8 locations in the guide</p>
+      <p class="lc-count">→ 12 locations in the guide</p>
     </div>
 
     <!-- Brera card -->
@@ -1481,7 +1529,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <div class="lc-rule"></div>
       <p class="lc-desc">Artists left decades ago. The aesthetic stayed forever. Best espresso of your life is down a street with no sign.</p>
       <p class="lc-type">Cafés · Galleries · Concept Stores</p>
-      <p class="lc-count">→ 7 locations in the guide</p>
+      <p class="lc-count">→ 11 locations in the guide</p>
     </div>
 
     <!-- Quadrilatero card -->
@@ -1491,7 +1539,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <div class="lc-rule"></div>
       <p class="lc-desc">You know the brands. You don't know the doors. The real appointments happen elsewhere.</p>
       <p class="lc-type">Luxury · Showrooms · Insider Access</p>
-      <p class="lc-count">→ 9 locations in the guide</p>
+      <p class="lc-count">→ 22 locations in the guide</p>
     </div>
   </section>
 
@@ -2030,6 +2078,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* 0-0.20: zoom SVG up as backdrop */
     s4.to('#duomo-svg-wrap', { scale: 1.45, opacity: .22, ease: 'none', duration: .2 }, 0);
+    s4.fromTo('#cards-header', { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: .18 }, 0);
     s4.fromTo('#cards-zoom-hint', { opacity: 0 }, { opacity: 1, duration: .1 }, .05);
     s4.to('#cards-zoom-hint', { opacity: 0, duration: .08 }, .18);
 
@@ -2051,15 +2100,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ════════════════════════════
        S5 — NEIGHBORHOODS FLY IN
-       100vh scroll
+       scroll-triggered, no pin
     ════════════════════════════ */
     gsap.set('#nb-header', { opacity: 0, y: 28 });
-    gsap.set('#nb-nav',   { opacity: 0, x: -70, y:  65 });
-    gsap.set('#nb-brera', { opacity: 0, x:   0, y: -70 });
-    gsap.set('#nb-quad',  { opacity: 0, x:  70, y:   0 });
-    gsap.set('#nb-isola', { opacity: 0, x: -70, y: -70 });
-    gsap.set('#nb-pr',    { opacity: 0, x:   0, y:  70 });
-    gsap.set('#nb-cs',    { opacity: 0, x:  70, y:  70 });
+    gsap.set('.nb-card',   { opacity: 0, y: 60 });
 
     /* Reset SVG scale before neighborhoods */
     gsap.to('#duomo-svg-wrap', {
@@ -2067,19 +2111,17 @@ document.addEventListener('DOMContentLoaded', () => {
       scrollTrigger: { trigger: '#scene-neighborhoods', start: 'top 80%', end: 'top top', scrub: SCRUB },
     });
 
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: '#scene-neighborhoods', pin: true, anticipatePin: 1,
-        start: 'top top', end: '+=100vh', scrub: SCRUB,
+    ScrollTrigger.create({
+      trigger: '#scene-neighborhoods', start: 'top 75%', once: true,
+      onEnter: () => {
+        gsap.to('#nb-header', { opacity: 1, y: 0, duration: .6, ease: 'power2.out' });
+        gsap.to('.nb-card', {
+          opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
+          stagger: { amount: 0.8, from: 'start', grid: [3, 2] },
+          delay: .15,
+        });
       }
-    })
-    .fromTo('#nb-header', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: .3 }, 0)
-    .fromTo('#nb-nav',   { opacity: 0, x: -70, y:  65 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .12)
-    .fromTo('#nb-brera', { opacity: 0, x:   0, y: -70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .20)
-    .fromTo('#nb-quad',  { opacity: 0, x:  70, y:   0 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .26)
-    .fromTo('#nb-isola', { opacity: 0, x: -70, y: -70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .18)
-    .fromTo('#nb-pr',    { opacity: 0, x:   0, y:  70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .34)
-    .fromTo('#nb-cs',    { opacity: 0, x:  70, y:  70 }, { opacity: 1, x: 0, y: 0, duration: .5 }, .40);
+    });
 
     /* ════════════════════════════
        S6 — CTA
