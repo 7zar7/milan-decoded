@@ -660,62 +660,142 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
    MOBILE
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
-  .hl { font-size: 20vw; letter-spacing: .1em; }
+
+  /* ── FIX 6: overflow ── */
+  body { overflow-x: hidden; }
+
+  /* ── FIX 1/2: Hero letters ── */
+  .hl { font-size: 22vw; letter-spacing: .1em; }
   .hd { font-size: 9vw; }
   #hero-decoded { font-size: 4vw; letter-spacing: .4em; }
-  #hero-tagline { font-size: 3vw; }
+  #hero-vp-1    { font-size: 3.5vw; }
+  #hero-vp-2    { font-size: 3.2vw; }
   #hero-hint    { font-size: 2.2vw; }
-  #scene-story  { grid-template-columns: 1fr; }
-  #story-right  { display: none; }
-  #story-line-1 { font-size: 6.5vw; }
-  #story-line-2 { font-size: 8.5vw; }
-  #story-line-3 { font-size: 6.5vw; }
+
+  /* ── FIX 3: Story — photo on top, text below ── */
+  #scene-story  {
+    grid-template-columns: 1fr;
+    height: auto; min-height: 100vh;
+  }
+  #story-right  {
+    display: block;
+    height: 50vh;
+    order: -1;
+    position: relative;
+  }
+  #story-left   {
+    padding: 2rem;
+    background: rgba(13,10,8,0.88);
+    justify-content: flex-start;
+    padding-top: 2.5rem;
+  }
+  #story-label  { font-size: 2.5vw; }
+  #story-pre    { font-size: 3.5vw; }
+  #story-line-1 { font-size: 7vw; line-height: 1.3; }
+  #story-line-2 { font-size: 9vw; line-height: 1.2; }
+  #story-line-3 { font-size: 7vw; line-height: 1.3; }
   #story-byline { font-size: 3vw; }
-  .loc-card     { width: 88vw; right: 6%; }
-  .lc-coord     { font-size: 2.5vw; }
-  .lc-name      { font-size: 8vw; }
-  .lc-desc      { font-size: 3vw; }
-  .lc-count     { font-size: 2.2vw; }
-  #nb-grid      { grid-template-columns: 1fr 1fr; }
-  .nb-name      { font-size: 4.5vw; }
-  .nb-coord     { font-size: 2vw; }
-  .nb-desc      { font-size: 2.5vw; }
-  .nb-tag       { font-size: 2vw; }
-  #cta-eyebrow  { font-size: 2.5vw; }
-  #cta-title    { font-size: 11vw; }
-  #cta-features { font-size: 3vw; }
-  #cta-price    { font-size: 9vw; }
-  #cta-btn      { font-size: 3vw; }
-  #cta-fine     { font-size: 2.5vw; }
-  #duomo-label .d-coord { font-size: 2.5vw; }
-  #duomo-label .d-city  { font-size: 4vw; }
-  #nb-eyebrow   { font-size: 2.5vw; }
-  .fc-item      { display: none; }
-  /* MFW */
-  #mfw-eyebrow  { font-size: 2.5vw; }
-  #mfw-quote    { font-size: 5.5vw; }
-  .mfw-badge    { font-size: 2.2vw; }
-  .mfw-frame-caption { font-size: 2vw; }
-  #mfw-frame    { right: 3%; bottom: 2rem; }
-  #mfw-frame img { width: 130px; height: 165px; }
-  /* Numbers */
-  .num-val      { font-size: 20vw; }
-  .num-label    { font-size: 2.2vw; }
-  .num-item     { padding: 2rem; }
-  /* Inside */
+
+  /* ── FIX 2: Pain point ── */
+  #scene-pain   { height: auto; min-height: 100vh; padding: 3rem 1.5rem; }
+  #pain-label   { font-size: 2.5vw; letter-spacing: .3em; }
+  #pain-main    { font-size: 6.5vw; line-height: 1.4; }
+  #pain-sub     { font-size: 3.8vw; line-height: 1.8; }
+  #pain-closer  { font-size: 5vw; }
+
+  /* ── FIX 5: Coordinate/Duomo scene ── */
+  #duomo-label .d-coord  { font-size: 2.5vw; }
+  #duomo-label .d-bridge { font-size: 6vw; line-height: 1.4; }
+  #duomo-label .d-sub    { font-size: 2.2vw; }
+
+  /* ── FIX 4: Fashion Week — polaroid in flow ── */
+  #scene-mfw {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto; min-height: 100vh;
+    padding: 3rem 2rem 2rem;
+  }
+  #mfw-content  { padding: 0 0 1.5rem; max-width: 100%; }
+  #mfw-frame    {
+    position: relative;
+    top: auto; right: auto;
+    transform: rotate(-2deg);
+    width: 160px; margin: 0 auto;
+    will-change: auto;
+  }
+  #mfw-frame img    { height: 200px; width: 100%; }
+  #mfw-eyebrow      { font-size: 2.5vw; }
+  #mfw-quote        { font-size: 5.5vw; }
+  .mfw-badge        { font-size: 2.2vw; }
+  .mfw-frame-caption { font-size: 2.2vw; }
+
+  /* ── FIX 5: Numbers ── */
+  #num-grid  { grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
+  .num-val   { font-size: 18vw; }
+  .num-label { font-size: 3vw; }
+  .num-item  { padding: 2rem; }
+
+  /* Location cards */
+  .loc-card  { width: 88vw; right: 6%; }
+  .lc-coord  { font-size: 2.5vw; }
+  .lc-name   { font-size: 8vw; }
+  .lc-desc   { font-size: 3vw; }
+  .lc-count  { font-size: 2.2vw; }
+
+  /* ── FIX 6: Bar Basso / Inside ── */
   #section-inside { grid-template-columns: 1fr; }
-  #ins-right    { display: none; }
-  .ins-name     { font-size: 10vw; }
-  .ins-coord    { font-size: 2.5vw; }
-  .ins-quote    { font-size: 3.5vw; }
-  .ins-addr     { font-size: 2.2vw; }
-  .ins-meta     { font-size: 2.2vw; }
-  /* Countdown */
-  .cd-num       { font-size: 8vw; }
-  .cd-unit      { font-size: 2vw; }
-  .cd-sep       { font-size: 6vw; }
-  #cd-label     { font-size: 2.2vw; }
+  #ins-right  { display: none; }
+  .ins-name   { font-size: 9vw; }
+  .ins-coord  { font-size: 2.5vw; }
+  .ins-quote  { font-size: 4vw; line-height: 1.7; }
+  .ins-addr   { font-size: 3.5vw; }
+  .ins-meta   { font-size: 2.2vw; }
+
+  /* ── Neighborhoods — 2-col grid ── */
+  #scene-neighborhoods { padding-top: 4rem; }
+  #nb-header-1   { font-size: 10vw; }
+  #nb-header-2   { font-size: 7vw; }
+  #nb-header-sub { font-size: 3vw; }
+  #nb-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.8rem !important;
+    padding: 1rem !important;
+    width: 100vw !important;
+    box-sizing: border-box;
+  }
+  .nb-card {
+    border: 1px solid rgba(201,168,76,0.3) !important;
+    min-height: 260px !important;
+    padding: 1.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .nb-name  { font-size: 5.5vw; }
+  .nb-desc  { font-size: 3vw; }
+  .nb-coord { font-size: 2vw; }
+  .nb-tag   { font-size: 2vw; }
+
+  /* ── FIX 2: CTA ── */
+  #cta-eyebrow  { font-size: 2.5vw; }
+  #cta-title    { font-size: 12vw; }
+  #cta-features { font-size: 3vw; }
+  #cta-price    { font-size: 10vw; }
+  #cta-btn      { font-size: 3.5vw; padding: 1rem 2rem; }
+  #cta-fine     { font-size: 2.5vw; }
   #social-proof { font-size: 3vw; }
+
+  /* Countdown */
+  .cd-num   { font-size: 8vw; }
+  .cd-unit  { font-size: 2vw; }
+  .cd-sep   { font-size: 6vw; }
+  #cd-label { font-size: 2.2vw; }
+
+  /* ── FIX 6: Easter eggs ── */
+  .easter-egg svg { width: 16px; height: 16px; }
+  .egg-tooltip    { font-size: 10px; width: 180px; }
+
+  /* Misc */
+  .fc-item { display: none; }
 }
 /* ═══════════════════════════════════════
    MADONNINA GLOW PULSE
@@ -1599,6 +1679,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  document.fonts.ready.then(() => {
 
   const SCRUB = 1.5;
 
@@ -2026,7 +2107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ════════════════════════════ */
     gsap.set('.num-item', { opacity: 0, y: 32 });
 
-    ScrollTrigger.create({ trigger: '#section-numbers', start: 'top 68%', once: true, onEnter: () => {
+    ScrollTrigger.create({ trigger: '#section-numbers', start: 'top 90%', once: true, onEnter: () => {
       gsap.to('.num-item', { opacity: 1, y: 0, stagger: .18, duration: .6, ease: 'power2.out' });
       document.querySelectorAll('.num-val').forEach((el, i) => {
         const target = parseInt(el.dataset.target, 10);
@@ -2104,6 +2185,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Refresh after images load ── */
   window.addEventListener('load', () => ScrollTrigger.refresh());
 
+  }); // fonts.ready
 });
 </script>
 </body>
