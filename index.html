@@ -158,11 +158,15 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   color: var(--gold); display: flex;
 }
 #preloader-coords .ch { display: inline-block; min-width: .58em; text-align: center; }
-#preloader-locating {
+
+/* ═══════════════════════════════════════
+   HERO COORDS (static, above MILAN)
+═══════════════════════════════════════ */
+#hero-coords {
   font-family: 'JetBrains Mono', monospace; font-weight: 300;
-  font-size: clamp(10px,.75vw,12px); letter-spacing: .5em;
-  color: rgba(201,168,76,.55); opacity: 0;
-  text-transform: lowercase; transition: opacity .6s ease;
+  font-size: 0.8vw; letter-spacing: 0.3em;
+  color: var(--gold); opacity: 0;
+  position: relative; z-index: 2; margin-bottom: 1.2rem;
 }
 
 /* ═══════════════════════════════════════
@@ -179,11 +183,11 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
    SCENE 1 — HERO
 ═══════════════════════════════════════ */
 #hero { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
-#hero-letters { display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
+#hero-letters { display: flex; align-items: center; justify-content: center; gap: 0.2em; position: relative; z-index: 2; }
 .hl {
   font-family: 'Playfair Display', serif;
   font-size: 18vw; font-weight: 900;
-  color: var(--white); letter-spacing: .3em; line-height: 1;
+  color: var(--white); letter-spacing: 0; line-height: 1;
   display: inline-block; will-change: transform, opacity;
 }
 #hl-n { letter-spacing: 0; }
@@ -661,79 +665,73 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* ── FIX 6: overflow ── */
   body { overflow-x: hidden; }
 
-  /* ── FIX 1/2: Hero letters ── */
-  .hl { font-size: 22vw; letter-spacing: .1em; }
-  .hd { font-size: 9vw; }
+  /* ── Hero ── */
+  #hero-coords  { font-size: 3vw; letter-spacing: 0.2em; margin-bottom: 0.8rem; }
+  #hero-letters { gap: 0.1em; }
+  .hl           { font-size: 22vw; }
+  .hd           { font-size: 9vw; }
   #hero-decoded { font-size: 4vw; letter-spacing: .4em; }
   #hero-vp-1    { font-size: 3.5vw; }
   #hero-vp-2    { font-size: 3.2vw; }
   #hero-hint    { font-size: 2.2vw; }
 
-  /* ── FIX 3: Story — photo on top, text below ── */
-  #scene-story  {
-    grid-template-columns: 1fr;
-    height: auto; min-height: 100vh;
-  }
-  #story-right  {
-    display: block;
-    height: 50vh;
-    order: -1;
-    position: relative;
-  }
-  #story-left   {
-    padding: 2rem;
-    background: rgba(13,10,8,0.88);
-    justify-content: flex-start;
-    padding-top: 2.5rem;
-  }
-  #story-label  { font-size: 2.5vw; }
-  #story-pre    { font-size: 3.5vw; }
+  /* ── FIX 6: Duomo / value-assertion scene ── */
+  #duomo-label            { padding: 0 1.5rem; text-align: center; }
+  #duomo-label .d-coord   { font-size: 3.5vw; margin-bottom: 1.2rem; }
+  #duomo-label .d-bridge  { font-size: 8vw; line-height: 1.35; }
+  #duomo-label .d-sub     { font-size: 2.8vw; margin-top: 1.8rem; }
+
+  /* ── FIX 7: Pain point — stripped down ── */
+  #scene-pain { height: auto; min-height: 100vh; padding: 3rem 1.8rem; }
+  #pain-label { font-size: 2.5vw; letter-spacing: .35em; }
+  #pain-main  { font-size: 6.5vw; line-height: 1.45; }
+  #pain-sub   { display: none; }
+  #pain-rule  { display: none; }
+  #pain-closer { font-size: 5vw; }
+
+  /* ── FIX 8: Story — photo top, labels hidden ── */
+  #scene-story  { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+  #story-right  { display: block; height: 50vh; order: -1; position: relative; }
+  #story-left   { padding: 2rem 2rem 2.5rem; background: rgba(13,10,8,0.88); justify-content: flex-start; padding-top: 2.5rem; }
+  #story-label  { display: none; }
+  #story-pre    { display: none; }
   #story-line-1 { font-size: 7vw; line-height: 1.3; }
   #story-line-2 { font-size: 9vw; line-height: 1.2; }
   #story-line-3 { font-size: 7vw; line-height: 1.3; }
-  #story-byline { font-size: 3vw; }
+  #story-byline { font-size: 3.5vw; }
 
-  /* ── FIX 2: Pain point ── */
-  #scene-pain   { height: auto; min-height: 100vh; padding: 3rem 1.5rem; }
-  #pain-label   { font-size: 2.5vw; letter-spacing: .3em; }
-  #pain-main    { font-size: 6.5vw; line-height: 1.4; }
-  #pain-sub     { font-size: 3.8vw; line-height: 1.8; }
-  #pain-closer  { font-size: 5vw; }
-
-  /* ── FIX 5: Coordinate/Duomo scene ── */
-  #duomo-label .d-coord  { font-size: 2.5vw; }
-  #duomo-label .d-bridge { font-size: 6vw; line-height: 1.4; }
-  #duomo-label .d-sub    { font-size: 2.2vw; }
-
-  /* ── FIX 4: Fashion Week — polaroid in flow ── */
-  #scene-mfw {
-    flex-direction: column;
-    align-items: stretch;
-    height: auto; min-height: 100vh;
-    padding: 3rem 2rem 2rem;
-  }
+  /* ── Fashion Week polaroid ── */
+  #scene-mfw    { flex-direction: column; align-items: stretch; height: auto; min-height: 100vh; padding: 3rem 2rem 2rem; }
   #mfw-content  { padding: 0 0 1.5rem; max-width: 100%; }
-  #mfw-frame    {
-    position: relative;
-    top: auto; right: auto;
-    transform: rotate(-2deg);
-    width: 160px; margin: 0 auto;
-    will-change: auto;
-  }
-  #mfw-frame img    { height: 200px; width: 100%; }
-  #mfw-eyebrow      { font-size: 2.5vw; }
-  #mfw-quote        { font-size: 5.5vw; }
-  .mfw-badge        { font-size: 2.2vw; }
+  #mfw-frame    { position: relative; top: auto; right: auto; transform: rotate(-2deg); width: 160px; margin: 0 auto; will-change: auto; }
+  #mfw-frame img { height: 200px; width: 100%; }
+  #mfw-eyebrow  { font-size: 2.5vw; }
+  #mfw-quote    { font-size: 5.5vw; }
+  .mfw-badge    { font-size: 2.2vw; }
   .mfw-frame-caption { font-size: 2.2vw; }
 
-  /* ── FIX 5: Numbers ── */
-  #num-grid  { grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
-  .num-val   { font-size: 18vw; }
-  .num-label { font-size: 3vw; }
-  .num-item  { padding: 2rem; }
+  /* ── FIX 9: Numbers — no overflow ── */
+  #section-numbers { overflow: hidden; }
+  #num-grid {
+    width: 100vw !important;
+    max-width: 100% !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .num-item {
+    width: 50vw;
+    max-width: 50vw;
+    box-sizing: border-box;
+    padding: 2rem 1rem;
+    overflow: hidden;
+  }
+  .num-val   { font-size: 20vw; line-height: 1; }
+  .num-label { font-size: 2.8vw; letter-spacing: 0.2em; word-break: break-word; }
 
   /* Location cards */
   .loc-card  { width: 88vw; right: 6%; }
@@ -742,7 +740,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   .lc-desc   { font-size: 3vw; }
   .lc-count  { font-size: 2.2vw; }
 
-  /* ── FIX 6: Bar Basso / Inside ── */
+  /* Bar Basso / Inside */
   #section-inside { grid-template-columns: 1fr; }
   #ins-right  { display: none; }
   .ins-name   { font-size: 9vw; }
@@ -751,31 +749,48 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   .ins-addr   { font-size: 3.5vw; }
   .ins-meta   { font-size: 2.2vw; }
 
-  /* ── Neighborhoods — 2-col grid ── */
+  /* ── FIX 10: Neighborhoods — separator grid + icon fix ── */
   #scene-neighborhoods { padding-top: 4rem; }
   #nb-header-1   { font-size: 10vw; }
   #nb-header-2   { font-size: 7vw; }
   #nb-header-sub { font-size: 3vw; }
   #nb-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 0.8rem !important;
-    padding: 1rem !important;
+    gap: 1px !important;
+    padding: 0 !important;
     width: 100vw !important;
     box-sizing: border-box;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.15);
   }
   .nb-card {
-    border: 1px solid rgba(201,168,76,0.3) !important;
-    min-height: 260px !important;
+    background: #0D0A08;
+    min-height: 220px !important;
     padding: 1.5rem !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    position: relative;
   }
-  .nb-name  { font-size: 5.5vw; }
-  .nb-desc  { font-size: 3vw; }
-  .nb-coord { font-size: 2vw; }
-  .nb-tag   { font-size: 2vw; }
+  .nb-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    z-index: 1;
+  }
+  .nb-icon svg { width: 32px; height: 32px; }
+  .nb-coord   { font-size: 2.2vw; padding-right: 40px; }
+  .nb-name    { font-size: 7vw; line-height: 1.1; margin-top: 0.3rem; }
+  .nb-desc    { font-size: 3.5vw; margin-top: 0.2rem; }
+  .nb-rule    { display: none; }
+  .nb-tags    { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .nb-tag     { font-size: 2.8vw; padding: 0.3rem 0.6rem; }
 
-  /* ── FIX 2: CTA ── */
+  /* ── CTA ── */
   #cta-eyebrow  { font-size: 2.5vw; }
   #cta-title    { font-size: 12vw; }
   #cta-features { font-size: 3vw; }
@@ -790,7 +805,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   .cd-sep   { font-size: 6vw; }
   #cd-label { font-size: 2.2vw; }
 
-  /* ── FIX 6: Easter eggs ── */
+  /* Easter eggs */
   .easter-egg svg { width: 16px; height: 16px; }
   .egg-tooltip    { font-size: 10px; width: 180px; }
 
@@ -993,7 +1008,6 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 
 <div id="preloader">
   <div id="preloader-coords"></div>
-  <p id="preloader-locating">locating milan</p>
 </div>
 
 <!-- ── Fixed Duomo SVG watermark ── -->
@@ -1304,6 +1318,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
     <span class="fc-item" style="top:82%;left:35%;--fc-dur:13s;--fc-del:3s;opacity:.06">45.46°N</span>
     <span class="fc-item" style="top:20%;left:55%;--fc-dur:7s;--fc-del:1.5s;opacity:.07">MI</span>
 
+    <p id="hero-coords">45.4642° N · 9.1900° E</p>
     <div id="hero-letters">
       <span class="hl" id="hl-m">M</span>
       <span class="hd" id="hd-1">·</span>
@@ -1335,7 +1350,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 
     <div id="duomo-label">
       <p class="d-coord">45.4642° N · 9.1900° E</p>
-      <p class="d-bridge">A city that rewards<br>those who know<br>where to look.</p>
+      <p class="d-bridge"><span class="dw">A</span> <span class="dw">city</span> <span class="dw">that</span> <span class="dw">rewards</span><br><span class="dw">those</span> <span class="dw">who</span> <span class="dw">know</span><br><span class="dw">where</span> <span class="dw">to</span> <span class="dw">look.</span></p>
       <p class="d-sub">45 LOCATIONS · CURATED OVER 3 YEARS</p>
     </div>
     <div class="easter-egg" style="right:8%;top:15%;animation-delay:0s;">
@@ -1779,9 +1794,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const SC_CHARS  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789°.\' ';
   const PARIS_STR = '48.8566° N, 2.3522° E';
   const MILAN_STR = '45.4642° N, 9.1900° E';
-  const coordsEl   = document.getElementById('preloader-coords');
-  const locatingEl = document.getElementById('preloader-locating');
-  const charSpans  = PARIS_STR.split('').map(ch => {
+  const coordsEl  = document.getElementById('preloader-coords');
+  const charSpans = PARIS_STR.split('').map(ch => {
     const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch;
     coordsEl.appendChild(s); return s;
   });
@@ -1798,19 +1812,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   setTimeout(() => {
     scrambleToMilan();
-    setTimeout(() => { locatingEl.style.opacity = '1'; }, 550);
     setTimeout(() => {
       const pre = document.getElementById('preloader');
-      pre.style.transition = 'opacity .75s ease';
+      pre.style.transition = 'opacity .52s ease';
       pre.style.opacity = '0';
       setTimeout(() => {
         pre.style.display = 'none';
         const mainEl = document.getElementById('main');
         mainEl.style.visibility = 'visible';
         gsap.to(mainEl, { opacity: 1, duration: 0.5, ease: 'power2.out', onComplete: heroEntrance });
-      }, 750);
-    }, 1700);
-  }, 800);
+      }, 525);
+    }, 1190);
+  }, 560);
 
   /* ──────────────────────────────
      HERO ENTRANCE (one-time)
@@ -1818,6 +1831,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function heroEntrance() {
     initDuomoSVG();
 
+    gsap.set('#hero-coords', { opacity: 0 });
     gsap.set('#hl-m', { x: -100, opacity: 0 });
     gsap.set('#hl-n', { x:  100, opacity: 0 });
     gsap.set('#hl-i', { y:  -80, opacity: 0 });
@@ -1830,12 +1844,13 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.set('#hero-hint',    { opacity: 0 });
 
     const tl = gsap.timeline();
-    tl.to('#hl-m', { x: 0, opacity: 1, duration: .95, ease: 'power3.out' }, 0)
-      .to('#hl-n', { x: 0, opacity: 1, duration: .95, ease: 'power3.out' }, .06)
-      .to('#hl-i', { y: 0, opacity: 1, duration: .88, ease: 'power3.out' }, .12)
-      .to('#hl-l', { y: 0, opacity: 1, duration: .88, ease: 'power3.out' }, .18)
-      .to('#hl-a', { y: 0, opacity: 1, duration: .88, ease: 'power3.out' }, .24)
-      .to('#hd-1,#hd-2,#hd-3,#hd-4', { opacity: 1, stagger: .06, duration: .4 }, .35);
+    tl.to('#hero-coords', { opacity: 0.65, duration: .4 }, 0)
+      .to('#hl-m', { x: 0, opacity: 1, duration: .67, ease: 'power3.out' }, 0)
+      .to('#hl-n', { x: 0, opacity: 1, duration: .67, ease: 'power3.out' }, .04)
+      .to('#hl-i', { y: 0, opacity: 1, duration: .62, ease: 'power3.out' }, .08)
+      .to('#hl-l', { y: 0, opacity: 1, duration: .62, ease: 'power3.out' }, .13)
+      .to('#hl-a', { y: 0, opacity: 1, duration: .62, ease: 'power3.out' }, .17)
+      .to('#hd-1,#hd-2,#hd-3,#hd-4', { opacity: 1, stagger: .04, duration: .28 }, .24);
 
     tl.add(() => {
       gsap.set('#hero-decoded', { opacity: 1 });
@@ -1849,12 +1864,12 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => { cursor.style.animation = 'none'; cursor.style.opacity = '0'; }, 1100);
         }
       }, 82);
-    }, .85);
+    }, .60);
 
-    tl.to('#hero-vp',   { opacity: 1, duration: .8, ease: 'power2.out' }, 1.5);
-    tl.to('#hero-hint', { opacity: .5, duration: .7 }, 2.0);
+    tl.to('#hero-vp',   { opacity: 1, duration: .8, ease: 'power2.out' }, 1.05);
+    tl.to('#hero-hint', { opacity: .5, duration: .7 }, 1.4);
 
-    tl.add(initScrollAnimations, 1.2);
+    tl.add(initScrollAnimations, .85);
   }
 
   /* ──────────────────────────────
@@ -1909,12 +1924,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const s2 = gsap.timeline({
       scrollTrigger: {
         trigger: '#scene-duomo', pin: true, anticipatePin: 1,
-        start: 'top top', end: '+=100vh', scrub: SCRUB,
+        start: 'top top', end: '+=200vh', scrub: 3,
       }
     });
 
-    /* SVG appears as scene pins */
-    s2.to('#duomo-svg-wrap', { opacity: 1, duration: .12, ease: 'none' }, 0);
+    /* SVG appears + steady opacity through draw, subtle scale */
+    s2.to('#duomo-svg-wrap', { opacity: .75, duration: .12, ease: 'none' }, 0);
+    s2.to('#duomo-svg-wrap', { scale: 1.4, ease: 'none', duration: 1 }, 0);
 
     /* G1 — base horizontal line */
     s2.to('#d-g1 line', { strokeDashoffset: 0, duration: .06, ease: 'none' }, .02);
@@ -1943,11 +1959,12 @@ document.addEventListener('DOMContentLoaded', () => {
     /* G9 — Madonnina star at apex */
     s2.to('#madonnina circle, #madonnina line', { strokeDashoffset: 0, stagger: .028, duration: .07, ease: 'none' }, .89);
 
-    /* Label fades in near end */
-    s2.fromTo('#duomo-label', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .18 }, .84);
+    /* Label: whole container + word-by-word stagger */
+    s2.fromTo('#duomo-label', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .14 }, .82);
+    s2.fromTo('.d-bridge .dw', { y: -22, opacity: 0 }, { y: 0, opacity: 1, stagger: .04, duration: .14 }, .84);
 
-    /* Transition to watermark at end of scene */
-    s2.to('#duomo-svg-wrap', { opacity: .08, duration: .22 }, .90);
+    /* Fade to watermark only in last 20% */
+    s2.to('#duomo-svg-wrap', { opacity: .08, duration: .18 }, .82);
 
     /* ════════════════════════════
        PAIN POINT — sequential reveal
@@ -2107,7 +2124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ════════════════════════════ */
     gsap.set('.num-item', { opacity: 0, y: 32 });
 
-    ScrollTrigger.create({ trigger: '#section-numbers', start: 'top 90%', once: true, onEnter: () => {
+    ScrollTrigger.create({ trigger: '#section-numbers', start: 'top 85%', once: true, onEnter: () => {
       gsap.to('.num-item', { opacity: 1, y: 0, stagger: .18, duration: .6, ease: 'power2.out' });
       document.querySelectorAll('.num-val').forEach((el, i) => {
         const target = parseInt(el.dataset.target, 10);
