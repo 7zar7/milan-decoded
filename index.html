@@ -7,6 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" as="style" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -183,7 +184,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
    SCENE 1 — HERO
 ═══════════════════════════════════════ */
 #hero { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
-#hero-letters { display: flex; align-items: center; justify-content: center; gap: 0.2em; position: relative; z-index: 2; }
+#hero-letters { display: flex; align-items: center; justify-content: center; gap: 0.2em; position: relative; z-index: 2; visibility: hidden; }
 .hl {
   font-family: 'Playfair Display', serif;
   font-size: 18vw; font-weight: 900;
@@ -273,7 +274,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 #story-byline {
   font-family: 'DM Sans', sans-serif; font-weight: 300;
   font-size: .9vw; color: var(--blush); line-height: 1.6;
-  opacity: 0; will-change: opacity;
+  opacity: 0; will-change: opacity; margin-bottom: .4rem;
 }
 #story-right {
   position: relative; overflow: hidden;
@@ -698,6 +699,13 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   #duomo-label .d-bridge  { font-size: 8vw; line-height: 1.35; }
   #duomo-label .d-sub     { font-size: 2.8vw; margin-top: 1.8rem; }
 
+  /* ── New conversion elements ── */
+  #hero-urgency  { font-size: 2.2vw; }
+  #story-trust   { font-size: 3vw; }
+  #ins-more-desc { font-size: 3.2vw; }
+  #cta-risk      { font-size: 2.8vw; }
+  #num-verified  { font-size: 4vw; }
+
   /* ── FIX 7: Pain point — stripped down ── */
   #scene-pain { height: auto; min-height: 100vh; padding: 3rem 1.8rem; }
   #pain-label { font-size: 2.5vw; letter-spacing: .35em; }
@@ -857,6 +865,36 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   width: 48px; height: 48px; pointer-events: none; opacity: 0;
 }
 .nb-icon svg { width: 48px; height: 48px; overflow: visible; }
+
+/* ═══════════════════════════════════════
+   CONVERSION COPY ELEMENTS
+═══════════════════════════════════════ */
+#hero-urgency {
+  font-family: 'JetBrains Mono', monospace; font-weight: 300;
+  font-size: .75vw; letter-spacing: .25em; color: var(--gold);
+  text-transform: uppercase; opacity: 0; position: relative; z-index: 2;
+  margin-top: .6rem; will-change: opacity;
+}
+#story-trust {
+  font-family: 'DM Sans', sans-serif; font-weight: 300; font-style: italic;
+  font-size: .85vw; color: var(--blush); line-height: 1.6;
+  opacity: 0; will-change: opacity; margin-top: .8rem;
+}
+#ins-more-desc {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .9vw; color: var(--blush); line-height: 1.8;
+  opacity: 0; will-change: opacity; margin-bottom: 1.8rem;
+}
+#cta-risk {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  font-size: .8vw; color: var(--blush); line-height: 1.7;
+  opacity: 0; will-change: opacity; text-align: center;
+}
+#num-verified {
+  font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic;
+  font-size: 1.5vw; color: var(--gold); text-align: center;
+  opacity: 0; will-change: opacity; margin-top: 1.5rem; position: relative; z-index: 1;
+}
 
 /* ═══════════════════════════════════════
    HERO VALUE PROPOSITION
@@ -1350,6 +1388,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <p id="hero-vp-1">Milan has 10,000 restaurants. Tourists find 50.</p>
       <p id="hero-vp-2">This is the other 50.</p>
     </div>
+    <p id="hero-urgency">Limited to 200 copies · PDF delivered instantly</p>
     <p id="hero-hint">scroll to enter ↓</p>
   </section>
 
@@ -1404,6 +1443,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <p id="story-line-2">I came for Bocconi.</p>
       <p id="story-line-3">Fashion Week found me later.</p>
       <p id="story-byline">Marusya Semizarova · Bocconi University · Milan Fashion Week</p>
+      <p id="story-trust">3 years of living here. Every location personally visited.</p>
     </div>
     <div id="story-right">
       <div id="portrait-wrap">
@@ -1425,13 +1465,13 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <p id="mfw-quote">"The front row taught me more about this city than any guidebook ever could."</p>
       <div id="mfw-badges">
         <span class="mfw-badge">Bocconi University</span>
-        <span class="mfw-badge">Ukrainian FW</span>
+        <span class="mfw-badge">Milan Fashion Week</span>
         <span class="mfw-badge">3 Seasons</span>
       </div>
     </div>
     <div id="mfw-frame">
-      <img src="photos/marusya-runway.jpg" alt="Marusya at Ukrainian Fashion Week" />
-      <p class="mfw-frame-caption">Marusya Semizarova · Ukrainian Fashion Week</p>
+      <img src="photos/marusya-runway.jpg" alt="Marusya at Milan Fashion Week" />
+      <p class="mfw-frame-caption">Marusya Semizarova · Milan Fashion Week</p>
     </div>
   </section>
 
@@ -1456,6 +1496,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
         <span class="num-label">Tourist Traps</span>
       </div>
     </div>
+    <p id="num-verified">Every single one verified in person.</p>
   </section>
 
   <!-- SCENE 4 — DUOMO ZOOM + 3 LOCATION CARDS (sequential) -->
@@ -1525,7 +1566,8 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
     </div>
     <div id="ins-right">
       <div id="ins-more-overlay">
-        <p id="ins-more-text">44 more locations inside</p>
+        <p id="ins-more-text">44 locations<br>still locked.</p>
+        <p id="ins-more-desc">Bars the industry disappears to after shows.<br>Restaurants with no English menu — by design.<br>Concept stores that don't run ads.</p>
         <button id="ins-cta-btn">UNLOCK THE INSIDER EDIT →</button>
       </div>
       <div class="ins-blur-row">
@@ -1547,7 +1589,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 
     <div id="nb-header">
       <p id="nb-header-1">Six Neighbourhoods.</p>
-      <p id="nb-header-2">Zero tourist traps.</p>
+      <p id="nb-header-2">Zero from TripAdvisor.</p>
       <p id="nb-header-sub">Every location personally verified.<br>Updated seasonally. No sponsored listings.</p>
     </div>
     <div id="nb-grid">
@@ -1682,6 +1724,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
       <p id="cd-expired" style="display:none">Price updated to €49</p>
     </div>
     <button id="cta-btn"><span>UNLOCK THE INSIDER EDIT →</span></button>
+    <p id="cta-risk">PDF delivered to your inbox in under 60 seconds.<br>No subscription. Buy once, keep forever.</p>
     <p id="social-proof">Delivered instantly · Worldwide access</p>
     <p id="cta-fine">Instant PDF delivery · Available worldwide</p>
   </section>
@@ -1835,7 +1878,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function heroEntrance() {
     initDuomoSVG();
 
-    gsap.set('#hero-coords', { opacity: 0 });
+    document.getElementById('hero-letters').style.visibility = 'visible';
+
+    gsap.set('#hero-coords',   { opacity: 0 });
+    gsap.set('#hero-urgency',  { opacity: 0 });
     gsap.set('#hl-m', { x: -100, opacity: 0 });
     gsap.set('#hl-n', { x:  100, opacity: 0 });
     gsap.set('#hl-i', { y:  -80, opacity: 0 });
@@ -1870,8 +1916,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 82);
     }, .60);
 
-    tl.to('#hero-vp',   { opacity: 1, duration: .8, ease: 'power2.out' }, 1.05);
-    tl.to('#hero-hint', { opacity: .5, duration: .7 }, 1.4);
+    tl.to('#hero-vp',      { opacity: 1, duration: .8, ease: 'power2.out' }, 1.05);
+    tl.to('#hero-urgency', { opacity: .8, duration: .6 }, 1.2);
+    tl.to('#hero-hint',    { opacity: .5, duration: .7 }, 1.4);
 
     tl.add(initScrollAnimations, .85);
   }
@@ -2009,7 +2056,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .fromTo('#story-line-1', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .18)
     .fromTo('#story-line-2', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .42)
     .fromTo('#story-line-3', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .66)
-    .fromTo('#story-byline', { opacity: 0 },          { opacity: .55,     duration: .22 }, .88);
+    .fromTo('#story-byline', { opacity: 0 },          { opacity: .55,     duration: .22 }, .88)
+    .fromTo('#story-trust',  { opacity: 0 },          { opacity: .7,      duration: .2  }, .94);
 
     /* ════════════════════════════
        S4 — DUOMO ZOOM + CARDS (SEQUENTIAL)
@@ -2080,7 +2128,7 @@ document.addEventListener('DOMContentLoaded', () => {
        80vh scroll
     ════════════════════════════ */
     gsap.set(['#cta-eyebrow','#cta-title','#cta-features','#cta-price'], { opacity: 0, y: 28 });
-    gsap.set(['#cta-rule','#cta-btn','#cta-fine','#countdown','#social-proof'], { opacity: 0 });
+    gsap.set(['#cta-rule','#cta-btn','#cta-fine','#cta-risk','#countdown','#social-proof'], { opacity: 0 });
 
     gsap.timeline({
       scrollTrigger: {
@@ -2095,8 +2143,9 @@ document.addEventListener('DOMContentLoaded', () => {
     .fromTo('#cta-price',    { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .22 }, .46)
     .fromTo('#countdown',    { opacity: 0 },        { opacity: 1,       duration: .25 }, .55)
     .fromTo('#cta-btn',      { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .22 }, .66)
-    .fromTo('#social-proof', { opacity: 0 },        { opacity: .8,      duration: .18 }, .76)
-    .fromTo('#cta-fine',     { opacity: 0 },        { opacity: .8,      duration: .18 }, .84);
+    .fromTo('#cta-risk',     { opacity: 0 },        { opacity: .7,      duration: .18 }, .74)
+    .fromTo('#social-proof', { opacity: 0 },        { opacity: .8,      duration: .18 }, .80)
+    .fromTo('#cta-fine',     { opacity: 0 },        { opacity: .8,      duration: .18 }, .88);
 
     /* ════════════════════════════
        MFW — scroll reveal (no pin)
@@ -2117,6 +2166,7 @@ document.addEventListener('DOMContentLoaded', () => {
        NUMBERS — count-up on entry
     ════════════════════════════ */
     gsap.set('.num-item', { opacity: 0, y: 32 });
+    gsap.set('#num-verified', { opacity: 0 });
 
     ScrollTrigger.create({ trigger: '#section-numbers', start: 'top 85%', once: true, onEnter: () => {
       gsap.to('.num-item', { opacity: 1, y: 0, stagger: .18, duration: .6, ease: 'power2.out' });
@@ -2128,6 +2178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             onUpdate() { el.textContent = Math.round(obj.val); } });
         }
       });
+      gsap.to('#num-verified', { opacity: 1, duration: .6, ease: 'power2.out', delay: .9 });
     }});
 
     /* ════════════════════════════
@@ -2135,12 +2186,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ════════════════════════════ */
     gsap.set('#ins-card-basso', { opacity: 0, x: -40 });
     gsap.set('#ins-more-text',  { opacity: 0, y: 20 });
+    gsap.set('#ins-more-desc',  { opacity: 0, y: 16 });
     gsap.set('#ins-cta-btn',    { opacity: 0 });
 
     ScrollTrigger.create({ trigger: '#section-inside', start: 'top 65%', once: true, onEnter: () => {
       gsap.to('#ins-card-basso', { opacity: 1, x: 0, duration: .8, ease: 'power2.out' });
       gsap.to('#ins-more-text',  { opacity: 1, y: 0, duration: .6, ease: 'power2.out', delay: .32 });
-      gsap.to('#ins-cta-btn',    { opacity: 1,        duration: .5,                     delay: .6  });
+      gsap.to('#ins-more-desc',  { opacity: .8, y: 0, duration: .5, ease: 'power2.out', delay: .5 });
+      gsap.to('#ins-cta-btn',    { opacity: 1,         duration: .5,                    delay: .72 });
     }});
 
     /* ════════════════════════════
