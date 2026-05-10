@@ -293,22 +293,13 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
   background: linear-gradient(to right, rgba(13,10,8,0.55) 0%, transparent 55%);
   pointer-events: none; z-index: 1;
 }
-#portrait-svg-figure {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  opacity: 0; z-index: 2; pointer-events: none;
-  will-change: opacity;
-}
 
 /* ═══════════════════════════════════════
    SCENE MFW — MILAN FASHION WEEK
 ═══════════════════════════════════════ */
 #scene-mfw {
   position: relative;
-  background-color: var(--obsidian);
-  background-image:
-    linear-gradient(rgba(201,168,76,0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201,168,76,0.055) 1px, transparent 1px);
-  background-size: 120px 80px;
+  background: var(--obsidian);
   display: flex; align-items: flex-end; overflow: hidden;
 }
 #mfw-overlay {
@@ -577,6 +568,7 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 ═══════════════════════════════════════ */
 #scene-neighborhoods {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.2rem;
+  height: auto; overflow: visible; padding-bottom: 6rem;
 }
 #nb-eyebrow {
   font-family: 'JetBrains Mono', monospace; font-weight: 300;
@@ -682,20 +674,6 @@ body { font-family: 'DM Sans', sans-serif; font-weight: 300; }
 .f-ig:hover { opacity: 1; }
 .f-ig svg { width: 18px; height: 18px; }
 
-/* ═══════════════════════════════════════
-   SCROLL SNAP
-═══════════════════════════════════════ */
-html {
-  scroll-snap-type: y mandatory;
-}
-.scene, #section-numbers, #section-inside {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
-/* GSAP pin-spacers also act as snap points */
-.pin-spacer {
-  scroll-snap-align: start;
-}
 
 /* ═══════════════════════════════════════
    MOBILE
@@ -845,10 +823,6 @@ html {
   /* Easter eggs */
   .easter-egg svg { width: 16px; height: 16px; }
   .egg-tooltip    { font-size: 10px; width: 180px; }
-
-  /* Scroll snap — proximity on mobile */
-  html { scroll-snap-type: y proximity; }
-  section { min-height: 100svh; }
 
   /* Misc */
   .fc-item { display: none; }
@@ -1040,10 +1014,9 @@ html {
     <ul>
       <li><a href="#hero"                class="nl"><span class="nav-idx">01</span>Home</a></li>
       <li><a href="#scene-story"         class="nl"><span class="nav-idx">02</span>Story</a></li>
-      <li><a href="#scene-mfw"           class="nl"><span class="nav-idx">03</span>Fashion Week</a></li>
-      <li><a href="#scene-neighborhoods" class="nl"><span class="nav-idx">04</span>Neighborhoods</a></li>
-      <li><a href="#scene-cta"           class="nl"><span class="nav-idx">05</span>The Guide</a></li>
-      <li><a href="mailto:contact@milandecoded.com" class="nl"><span class="nav-idx">06</span>Contact</a></li>
+      <li><a href="#scene-neighborhoods" class="nl"><span class="nav-idx">03</span>Neighbourhoods</a></li>
+      <li><a href="#guide"               class="nl"><span class="nav-idx">04</span>The Guide</a></li>
+      <li><a href="mailto:contact@milandecoded.com" class="nl"><span class="nav-idx">05</span>Contact</a></li>
     </ul>
   </nav>
 </div>
@@ -1436,15 +1409,6 @@ html {
       <div id="portrait-wrap">
         <img id="portrait-img" src="photos/marusya-portrait.jpg" alt="Marusya Semizarova" />
         <div id="portrait-photo-overlay"></div>
-        <svg id="portrait-svg-figure" viewBox="0 0 100 133" fill="none" xmlns="http://www.w3.org/2000/svg"
-             preserveAspectRatio="xMidYMid meet">
-          <g stroke="#C9A84C" stroke-linecap="round" fill="none">
-            <!-- Left neck/collarbone diagonal — jaw down toward left shoulder -->
-            <line id="pf-cheek-l" x1="34" y1="88" x2="18" y2="112" stroke-width="0.6" opacity="0.4"/>
-            <!-- Right neck/collarbone diagonal (mirror) -->
-            <line id="pf-cheek-r" x1="66" y1="88" x2="82" y2="112" stroke-width="0.6" opacity="0.4"/>
-          </g>
-        </svg>
       </div>
     </div>
   </section>
@@ -1818,14 +1782,6 @@ document.addEventListener('DOMContentLoaded', () => {
         gsap.set(el, { strokeDasharray: 600, strokeDashoffset: 600 });
       }
     });
-    document.querySelectorAll('#portrait-svg-figure line, #portrait-svg-figure path, #portrait-svg-figure ellipse').forEach(el => {
-      try {
-        const len = Math.ceil(el.getTotalLength ? el.getTotalLength() : 200) + 2;
-        gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
-      } catch(e) {
-        gsap.set(el, { strokeDasharray: 400, strokeDashoffset: 400 });
-      }
-    });
     document.querySelectorAll('.nb-icon svg path, .nb-icon svg line, .nb-icon svg circle, .nb-icon svg ellipse').forEach(el => {
       try {
         const len = Math.ceil(el.getTotalLength ? el.getTotalLength() : 120) + 2;
@@ -2041,8 +1997,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.set(['#story-label','#story-pre'], { opacity: 0 });
     gsap.set(['#story-line-1','#story-line-2','#story-line-3'], { opacity: 0, x: -55 });
     gsap.set('#story-byline', { opacity: 0 });
-    gsap.set('#portrait-svg-figure', { opacity: 0 });
-
     gsap.timeline({
       scrollTrigger: {
         trigger: '#scene-story', pin: true, anticipatePin: 1,
@@ -2050,8 +2004,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     })
     .fromTo('#portrait-wrap', { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: .8 }, 0)
-    .to('#portrait-svg-figure', { opacity: 0.5, duration: .35, ease: 'none' }, .12)
-    .to('#portrait-svg-figure line, #portrait-svg-figure path, #portrait-svg-figure ellipse', { strokeDashoffset: 0, stagger: .01, duration: .55, ease: 'none' }, .10)
     .fromTo('#story-label',  { opacity: 0 }, { opacity: 1,   duration: .18 }, 0)
     .fromTo('#story-pre',    { opacity: 0 }, { opacity: .6,  duration: .2  }, .10)
     .fromTo('#story-line-1', { opacity: 0, x: -55 }, { opacity: 1, x: 0, duration: .28 }, .18)
